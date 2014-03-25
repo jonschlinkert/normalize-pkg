@@ -1,7 +1,11 @@
 {
   "name": "normalize-pkg",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Normalize values in package.json to improve compatibility, programmatic readability and usefulness with third party libs.",
+  "author": {
+    "name": "Jon Schlinkert",
+    "url": "https://github.com/jonschlinkert"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/jonschlinkert/normalize-pkg.git"
