@@ -1,0 +1,43 @@
+{
+  "name": "normalize-pkg",
+  "version": "0.0.1",
+  "description": "Normalize values in package.json to improve compatibility, programmatic readability and usefulness with third party libs.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jonschlinkert/normalize-pkg.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jonschlinkert/normalize-pkg/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/jonschlinkert/normalize-pkg/blob/master/LICENSE-MIT"
+    }
+  ],
+  "keywords": [
+    "fix",
+    "normalize",
+    "package",
+    "pkg",
+    "properties",
+    "values"
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "preferGlobal": true,
+  "bin": {
+    "normalize": "./bin/normalize"
+  },
+  "dependencies": {
+    "cwd": "~0.2.2",
+    "fs-utils": "~0.3.8",
+    "minimist": "0.0.8",
+    "verbalize": "0.0.2"
+  },
+  "devDependencies": {
+    "verb": "~0.1.20"
+  }
+}

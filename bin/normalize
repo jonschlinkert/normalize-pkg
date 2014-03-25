@@ -1,0 +1,50 @@
+#!/usr/bin/env node
+
+const cwd      = require('cwd');
+const file     = require('fs-utils');
+const log      = require('verbalize');
+const argv     = require('minimist')(process.argv.slice(2));
+
+// Local libs
+var utils  = require('../lib/utils');
+
+// Set the `runner` for verbalize
+log.runner = 'normalize-pkg';
+
+
+/**
+ * Args
+ */
+
+var src  = argv._[0] || argv.s || argv.src  || 'package.json',      // => process.argv[2]
+    dest = argv._[1] || argv.d || argv.dest || 'package.json';
+
+/**
+ * Start
+ */
+
+log.writeln();
+log.subhead('reading', 'package.json');
+
+// Normalize package.json
+var normalizePkg = function() {
+  var obj = file.readJSONSync(cwd(src));
+  obj = utils.normalizeAuthor(obj);
+  obj = utils.normalizeLicense(obj);
+  obj = utils.normalizeRepo(obj);
+  obj = utils.normalizeBugs(obj);
+  return obj;
+};
+
+var normalized = normalizePkg('test/package.json');
+
+// Write the file
+file.writeJSONSync(cwd(dest), normalized);
+
+
+/**
+ * Log a success message.
+ */
+
+log.writeln();
+log.success('  ' + log.runner + ' [done]');
