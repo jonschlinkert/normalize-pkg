@@ -1,6 +1,6 @@
 {
   "name": "normalize-pkg",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Normalize values in package.json to improve compatibility, programmatic readability and usefulness with third party libs.",
   "author": {
     "name": "Jon Schlinkert",
