@@ -11,7 +11,7 @@
   * [bugs](#bugs)
   * [author](#author)
   * [repository](#repository)
-* [Author](#author)
+* [Authors](#authors)
 * [License](#license)
 
 <!-- toc stop -->
@@ -41,8 +41,8 @@ normalize [src] [dest]
 
 Or explicit:
 
-* `-s` | `--src`: normalize the specified source file
-* `-d` | `--dest`: write the file to the
+* `-s` | `--src`: normalize the specified source file.
+* `-d` | `--dest`: write the file to the specified destination.
 
 ## Normalized values
 
@@ -138,17 +138,16 @@ It will be normalized to:
 
 `repository.type` is determined based on a search of the `url` string.
 
-## Author
+## Authors
 
 **Jon Schlinkert**
 
 + [github/jonschlinkert](https://github.com/jonschlinkert)
 + [twitter/jonschlinkert](http://twitter.com/jonschlinkert)
 
-
 ## License
-Copyright (c) 2014 [Jon Schlinkert](http://twitter.com/jonschlinkert)
-Released under the [MIT license](./LICENSE-MIT)
+Copyright (c) 2014 Jon Schlinkert, contributors.
+Released under the MIT license
 
 ***
 

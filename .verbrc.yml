@@ -1,7 +1,2 @@
-plugins:   # plugins/*.js
-tags:      # tags/*.js
+docs: docs
 
-# Author
-username:  <%= username %>
-author:
-  name:    <%= authorName %>
