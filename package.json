@@ -6,6 +6,7 @@
     "name": "Jon Schlinkert",
     "url": "https://github.com/jonschlinkert"
   },
+  "homepage": "https://github.com/jonschlinkert/normalize-pkg/",
   "bugs": {
     "url": "https://github.com/jonschlinkert/normalize-pkg/issues"
   },
@@ -40,7 +41,7 @@
     "chai": "~1.9.1"
   },
   "repository": {
-    "type": "",
-    "url": ""
+    "type": "git",
+    "url": "git@github.com:jonschlinkert/normalize-pkg.git"
   }
 }
