@@ -1,4 +1,3 @@
-const fs = require('fs');
 const unique = require('unique-words');
 const utils = require('./lib/utils');
 const log = require('verbalize');
@@ -15,7 +14,8 @@ var normalize = module.exports = {};
  * @return {Object} normalized author
  */
 
-normalize.author = function (pkg) {
+normalize.author = function (pkg, options) {
+  options = options || {};
   var name = '', url = '';
 
   if (typeof pkg.author === 'object') {
@@ -60,7 +60,8 @@ normalize.author = function (pkg) {
  * @return {Object} normalized repository
  */
 
-normalize.repo = function (pkg) {
+normalize.repo = function (pkg, options) {
+  options = options || {};
   var type = '', url = '';
 
   if (typeof pkg.repository === 'object') {
@@ -110,7 +111,8 @@ normalize.repo = function (pkg) {
  * @return {Object} normalized bugs
  */
 
-normalize.bugs = function (pkg) {
+normalize.bugs = function (pkg, options) {
+  options = options || {};
   var url = '';
 
   if (typeof pkg.bugs === 'object') {
@@ -144,42 +146,46 @@ normalize.bugs = function (pkg) {
  * @param {Object} pkg
  * @return {Object} normalized license
  */
-normalize.license = function (pkg) {
+normalize.license = function (pkg, options) {
+  options = options || {};
   var type = '', url = '';
 
-  if (typeof pkg.license === 'object') {
-    utils.msg.isCorrect('license');
+  // Already formatted as an array, return.
+  if (pkg.licenses && pkg.licenses.length > 0)  {
+    utils.msg.isCorrect('licenses');
     return pkg;
 
-  } else if (typeof pkg.license === 'undefined') {
-    if (pkg.licenses && pkg.licenses.length === 1)  {
-      utils.msg.fixingProperty('license');
-
-      type = pkg.licenses[0].type;
-      url = pkg.licenses[0].url;
-      delete pkg.licenses;
-
-    } else {
-      utils.msg.isMissing('license');
-      utils.msg.addingProperty('license');
-    }
+  } else if (typeof pkg.license === 'object') {
+    utils.msg.fixingProperty('license');
+    type = pkg.license.type;
+    url = pkg.license.url;
+    delete pkg.license;
 
   } else if (typeof pkg.license === 'string') {
     utils.msg.fixingProperty('license');
 
+    if (options.license && options.license === true) {
+      return pkg;
+    }
+
     var inferred = utils.inferLicenseURL(pkg.license);
     type = inferred.type;
     url = inferred.url;
+    delete pkg.license;
+
+  } else if (typeof pkg.license === 'undefined') {
+    utils.msg.isMissing('license');
+    utils.msg.addingProperty('license');
 
   } else {
     // If none of the above, something is amiss
-    return utils.msg.isMalformed('license');
+    utils.msg.isMalformed('license');
   }
 
-  pkg.license = {
+  pkg.licenses = [{
     type: type,
     url: url
-  };
+  }];
 
   return pkg;
 };
@@ -192,7 +198,8 @@ normalize.license = function (pkg) {
  * @return {Object} normalized keywords
  */
 
-normalize.keywords = function (pkg) {
+normalize.keywords = function (pkg, options) {
+  options = options || {};
   var keywords = pkg.keywords || [];
 
   if (typeof pkg.keywords === 'undefined') {
@@ -221,11 +228,11 @@ normalize.keywords = function (pkg) {
  * @return {Object} normalized values
  */
 
-normalize.all = function(pkg) {
-  pkg = normalize.author(pkg);
-  pkg = normalize.repo(pkg);
-  pkg = normalize.bugs(pkg);
-  pkg = normalize.license(pkg);
-  pkg = normalize.keywords(pkg);
+normalize.all = function(pkg, options) {
+  pkg = normalize.author(pkg, options);
+  pkg = normalize.repo(pkg, options);
+  pkg = normalize.bugs(pkg, options);
+  pkg = normalize.license(pkg, options);
+  pkg = normalize.keywords(pkg, options);
   return pkg;
 };

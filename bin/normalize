@@ -30,7 +30,8 @@ log.mode.verbose = argv.v || argv.verbose || false;
  */
 
 var src  = argv._[0] || argv.s || argv.src  || 'package.json',
-    dest = argv._[1] || argv.d || argv.dest || 'package.json';
+    dest = argv._[1] || argv.d || argv.dest || 'package.json',
+    license = (argv.l || argv.license) ? true : false;
 
 
 /**
@@ -43,7 +44,7 @@ log.bold('  ' + log.runner, 'reading package.json');
 // Normalize package.json
 var normalizePkg = function(filepath) {
   var obj = require(cwd(filepath));
-  return JSON.stringify(normalize.all(obj), null, 2);
+  return JSON.stringify(normalize.all(obj, {license: license}), null, 2);
 };
 
 // Write the file

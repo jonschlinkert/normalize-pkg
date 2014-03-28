@@ -8,10 +8,10 @@ var pkg = require('../');
  * Author
  */
 
-describe('normalizeAuthor', function () {
+describe('author', function () {
   describe('when the `author` property is a string:', function () {
     it('should return an object, using the value from `author` to populate `author.name`', function () {
-      var actual = pkg.normalizeAuthor({
+      var actual = pkg.author({
         author: 'Jon Schlinkert'
       });
       var expected = {
@@ -26,7 +26,7 @@ describe('normalizeAuthor', function () {
 
   describe('when no `author` property exists, but an `authors` property exists with only one author:', function () {
     it('should convert the `authors` array into an `author` object', function () {
-      var actual = pkg.normalizeAuthor({
+      var actual = pkg.author({
         authors: [
           {
             name: 'Jon Schlinkert',
@@ -46,7 +46,7 @@ describe('normalizeAuthor', function () {
 
   describe('when no `author` or `authors` properties exist:', function () {
     it('should return an `author` object with empty values', function () {
-      var actual = pkg.normalizeAuthor({});
+      var actual = pkg.author({});
       var expected = {
         author: {
           name: '',
@@ -63,10 +63,10 @@ describe('normalizeAuthor', function () {
  * Repository
  */
 
-describe('normalizeRepo', function () {
+describe('repo', function () {
   describe('when the `repository` property is a string:', function () {
     it('should return an object, using the value from `repository` to populate `repository.type`', function () {
-      var actual = pkg.normalizeRepo({
+      var actual = pkg.repo({
         repository: 'https://github.com/assemble/verb.git'
       });
       var expected = {
@@ -81,7 +81,7 @@ describe('normalizeRepo', function () {
 
   describe('when no `repository` property exists, but a `repositories` property exists with only one repository:', function () {
     it('should convert the `repositories` array into a `repository` object', function () {
-      var actual = pkg.normalizeRepo({
+      var actual = pkg.repo({
         repositories: [
           {
             type: 'git',
@@ -103,7 +103,7 @@ describe('normalizeRepo', function () {
 
   describe('when no `repository` property exists:', function () {
     it('should return a `repository` object with empty values', function () {
-      var actual = pkg.normalizeRepo({});
+      var actual = pkg.repo({});
       var expected = {
         repository: {
           type: '',
@@ -120,10 +120,10 @@ describe('normalizeRepo', function () {
  * Bugs
  */
 
-describe('normalizeBugs', function () {
+describe('bugs', function () {
   describe('when no `bugs` property exists:', function () {
     it('should return a `bugs` object with empty values', function () {
-      var actual = pkg.normalizeBugs({});
+      var actual = pkg.bugs({});
       var expected = {
         bugs: {
           url: ''
@@ -135,7 +135,7 @@ describe('normalizeBugs', function () {
 
   describe('when the `bugs` property is a string:', function () {
     it('should return an object, using the value from `bugs` to populate `bugs.url`', function () {
-      var actual = pkg.normalizeBugs({
+      var actual = pkg.bugs({
         bugs: 'https://github.com/assemble/verb.git'
       });
       var expected = {
@@ -153,41 +153,40 @@ describe('normalizeBugs', function () {
  * License
  */
 
-describe('normalizeLicense', function () {
+describe('license', function () {
 
   describe('when the `license` property is a string:', function () {
-    it('should return an object, using the value from `license` to populate `license.type`', function () {
-      var actual = pkg.normalizeLicense({
-        license: 'MIT'
-      });
+    it('should return an array, using the value from `license` to populate `license.type`, and inferring the URL from the type.', function () {
+      var actual = pkg.license({license: 'MIT'}, {license: false});
       var expected = {
-        license: {
+        licenses: [{
           type: 'MIT',
           url: 'http://opensource.org/licenses/MIT'
-        }
+        }]
       };
       expect(actual).to.eql(expected);
     });
   });
 
+  describe('when the `license` property is a string, and `license: true` is defined in the options:', function () {
+    it('should return the license property as a string.', function () {
+      var actual = pkg.license({license: 'MIT'}, {license: true});
+      expect(actual).to.eql({license: 'MIT'});
+    });
+  });
+
   describe('when no `license` property exists, but a `licenses` property exists with only one license:', function () {
     it('should convert the `licenses` array into a `license` object', function () {
-      var actual = pkg.normalizeLicense({
+      var fixture = {
         licenses: [
           {
             type: 'Apache',
             url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
           }
         ]
-      });
-
-      var expected = {
-        license: {
-          type: 'Apache',
-          url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-        }
       };
-      expect(actual).to.eql(expected);
+      var actual = pkg.license(fixture);
+      expect(actual).to.eql(fixture);
     });
   });
 
@@ -205,7 +204,7 @@ describe('normalizeLicense', function () {
           }
         ]
       };
-      var actual = pkg.normalizeLicense(fixture);
+      var actual = pkg.license(fixture);
       var expected = fixture;
       expect(actual).to.eql(expected);
     });
@@ -213,12 +212,12 @@ describe('normalizeLicense', function () {
 
   describe('when no `license` or `licenses` properties exist:', function () {
     it('should return a `license` object with empty values', function () {
-      var actual = pkg.normalizeLicense({});
+      var actual = pkg.license({});
       var expected = {
-        license: {
+        licenses: [{
           type: '',
           url: ''
-        }
+        }]
       };
       expect(actual).to.eql(expected);
     });
