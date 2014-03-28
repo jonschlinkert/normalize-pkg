@@ -6,12 +6,20 @@ const log  = require('verbalize');
 const argv = require('minimist')(process.argv.slice(2));
 
 
-// normalize-pkg
-var pkg  = require('../');
+/**
+ * normalize-pkg
+ *
+ * @type {Object}
+ */
 
-// Set the `runner` for verbalize
+var normalize  = require('../');
+
+
+/**
+ * Set the `runner` for verbalize
+ */
+
 log.runner = 'normalize-pkg';
-
 
 // Run with verbose logging
 log.mode.verbose = argv.v || argv.verbose || false;
@@ -26,7 +34,7 @@ var src  = argv._[0] || argv.s || argv.src  || 'package.json',
 
 
 /**
- * Start
+ * Announce start
  */
 
 log.writeln();
@@ -35,19 +43,15 @@ log.bold('  ' + log.runner, 'reading package.json');
 // Normalize package.json
 var normalizePkg = function(filepath) {
   var obj = require(cwd(filepath));
-  obj = pkg.normalizeAuthor(obj);
-  obj = pkg.normalizeLicense(obj);
-  obj = pkg.normalizeRepo(obj);
-  obj = pkg.normalizeBugs(obj);
-  obj = pkg.normalizeKeywords(obj);
-  return JSON.stringify(obj, null, 2);
+  return JSON.stringify(normalize.all(obj), null, 2);
 };
 
 // Write the file
 fs.writeFileSync(cwd(dest), normalizePkg(src));
 
+
 /**
- * Log a success message.
+ * Success message.
  */
 
 log.writeln();

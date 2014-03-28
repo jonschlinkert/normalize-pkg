@@ -1,16 +1,21 @@
+const fs = require('fs');
 const unique = require('unique-words');
 const utils = require('./lib/utils');
 const log = require('verbalize');
 log.runner = 'normalize-pkg';
 
+
+
+var normalize = module.exports = {};
+
 /**
  * Author
  *
- * @param {Object}  pkg
- * @return {Object}
+ * @param {Object} pkg
+ * @return {Object} normalized author
  */
 
-exports.normalizeAuthor = function (pkg) {
+normalize.author = function (pkg) {
   var name = '', url = '';
 
   if (typeof pkg.author === 'object') {
@@ -51,11 +56,11 @@ exports.normalizeAuthor = function (pkg) {
 /**
  * Repository
  *
- * @param {Object}  pkg
- * @return {Object}
+ * @param {Object} pkg
+ * @return {Object} normalized repository
  */
 
-exports.normalizeRepo = function (pkg) {
+normalize.repo = function (pkg) {
   var type = '', url = '';
 
   if (typeof pkg.repository === 'object') {
@@ -101,11 +106,11 @@ exports.normalizeRepo = function (pkg) {
 /**
  * Bugs
  *
- * @param {Object}  pkg
- * @return {Object}
+ * @param {Object} pkg
+ * @return {Object} normalized bugs
  */
 
-exports.normalizeBugs = function (pkg) {
+normalize.bugs = function (pkg) {
   var url = '';
 
   if (typeof pkg.bugs === 'object') {
@@ -136,10 +141,10 @@ exports.normalizeBugs = function (pkg) {
 /**
  * License
  *
- * @param {Object}  pkg
- * @return {Object}
+ * @param {Object} pkg
+ * @return {Object} normalized license
  */
-exports.normalizeLicense = function (pkg) {
+normalize.license = function (pkg) {
   var type = '', url = '';
 
   if (typeof pkg.license === 'object') {
@@ -183,11 +188,11 @@ exports.normalizeLicense = function (pkg) {
 /**
  * Keywords
  *
- * @param {Object}  pkg
- * @return {Object}
+ * @param {Object} pkg
+ * @return {Object} normalized keywords
  */
 
-exports.normalizeKeywords = function (pkg) {
+normalize.keywords = function (pkg) {
   var keywords = pkg.keywords || [];
 
   if (typeof pkg.keywords === 'undefined') {
@@ -204,5 +209,23 @@ exports.normalizeKeywords = function (pkg) {
   }
 
   pkg.keywords = keywords;
+  return pkg;
+};
+
+
+
+/**
+ * All
+ *
+ * @param {Object} pkg
+ * @return {Object} normalized values
+ */
+
+normalize.all = function(pkg) {
+  pkg = normalize.author(pkg);
+  pkg = normalize.repo(pkg);
+  pkg = normalize.bugs(pkg);
+  pkg = normalize.license(pkg);
+  pkg = normalize.keywords(pkg);
   return pkg;
 };
