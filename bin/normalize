@@ -48,7 +48,7 @@ var normalizePkg = function(filepath) {
 };
 
 // Write the file
-fs.writeFileSync(cwd(dest), normalizePkg(src));
+fs.writeFileSync(cwd(dest), normalizePkg(src) + "\n");
 
 
 /**
