@@ -1,6 +1,6 @@
 {
   "name": "normalize-pkg",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Normalize values in package.json to improve compatibility, programmatic readability and usefulness with third party libs.",
   "author": {
     "name": "Jon Schlinkert",
@@ -37,10 +37,10 @@
     "normalize": "./bin/normalize"
   },
   "dependencies": {
-    "cwd": "~0.2.2",
+    "cwd": "~0.3.1",
     "minimist": "0.0.8",
     "unique-words": "0.0.2",
-    "verbalize": "~0.1.0"
+    "verbalize": "~0.1.2"
   },
   "devDependencies": {
     "verb": "~0.1.20",

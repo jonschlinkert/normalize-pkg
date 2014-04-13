@@ -215,7 +215,7 @@ normalize.keywords = function (pkg, options) {
     return utils.msg.isMalformed('keywords');
   }
 
-  pkg.keywords = keywords;
+  pkg.keywords = keywords.sort();
   return pkg;
 };
 
