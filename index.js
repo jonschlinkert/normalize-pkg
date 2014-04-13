@@ -1,11 +1,12 @@
 const unique = require('unique-words');
+const common = require('common-words');
 const utils = require('./lib/utils');
 const log = require('verbalize');
 log.runner = 'normalize-pkg';
 
 
-
 var normalize = module.exports = {};
+
 
 /**
  * Author
@@ -191,6 +192,7 @@ normalize.license = function (pkg, options) {
 };
 
 
+
 /**
  * Keywords
  *
@@ -215,7 +217,7 @@ normalize.keywords = function (pkg, options) {
     return utils.msg.isMalformed('keywords');
   }
 
-  pkg.keywords = keywords.sort();
+  pkg.keywords = utils.difference(keywords, common).sort();
   return pkg;
 };
 
