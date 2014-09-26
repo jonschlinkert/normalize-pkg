@@ -1,7 +1,17 @@
-const unique = require('unique-words');
-const common = require('common-words');
-const utils = require('./lib/utils');
-const log = require('verbalize');
+/*!
+ * normalize-pkg <https://github.com/jonschlinkert/normalize-pkg>
+ *
+ * Copyright (c) 2014 Jon Schlinkert, contributors.
+ * Licensed under the MIT license.
+ */
+
+'use strict';
+
+var isObject = require('is-plain-object');
+var extend = require('mixin-deep');
+var typeOf = require('kind-of');
+var utils = require('./lib/utils');
+var log = require('verbalize');
 log.runner = 'normalize-pkg';
 
 
@@ -16,14 +26,17 @@ var normalize = module.exports = {};
  */
 
 normalize.author = function (pkg, options) {
-  options = options || {};
-  var name = '', url = '';
+  options = extend({}, options);
+  pkg = extend({}, pkg);
 
-  if (typeof pkg.author === 'object') {
+  var name = '';
+  var url = '';
+
+  if (isObject(pkg.author)) {
     utils.msg.isCorrect('author');
     return pkg;
 
-  } else if (typeof pkg.author === 'undefined') {
+  } else if (pkg.author == null) {
     if (pkg.authors && pkg.authors.length === 1)  {
       utils.msg.fixingProperty('author');
 
@@ -36,7 +49,7 @@ normalize.author = function (pkg, options) {
       utils.msg.addingProperty('author');
     }
 
-  } else if (typeof pkg.author === 'string') {
+  } else if (typeOf(pkg.author)) {
     utils.msg.isMissing('author');
     utils.msg.fixingProperty('author');
 
@@ -65,11 +78,11 @@ normalize.repo = function (pkg, options) {
   options = options || {};
   var type = '', url = '';
 
-  if (typeof pkg.repository === 'object') {
+  if (isObject(pkg.repository)) {
     utils.msg.isCorrect('repository');
     return pkg;
 
-  } else if (typeof pkg.repository === 'undefined') {
+  } else if (typeOf(pkg.repository) === 'undefined') {
     if (pkg.repositories && pkg.repositories.length === 1)  {
       utils.msg.isMissing('repository');
       utils.msg.addingProperty('repository');
@@ -83,7 +96,7 @@ normalize.repo = function (pkg, options) {
       utils.msg.addingProperty('repository');
     }
 
-  } else if (typeof pkg.repository === 'string') {
+  } else if (typeOf(pkg.repository) === 'string') {
     utils.msg.fixingProperty('repository');
     url = pkg.repository;
 
@@ -116,15 +129,15 @@ normalize.bugs = function (pkg, options) {
   options = options || {};
   var url = '';
 
-  if (typeof pkg.bugs === 'object') {
+  if (isObject(pkg.bugs)) {
     utils.msg.isCorrect('bugs');
     return pkg;
 
-  } else if (typeof pkg.bugs === 'undefined') {
+  } else if (typeOf(pkg.bugs) === 'undefined') {
     utils.msg.isMissing('bugs');
     utils.msg.addingProperty('bugs');
 
-  } else if (typeof pkg.bugs === 'string') {
+  } else if (typeOf(pkg.bugs) === 'string') {
     utils.msg.fixingProperty('bugs');
     url = pkg.bugs;
 
@@ -156,13 +169,13 @@ normalize.license = function (pkg, options) {
     utils.msg.isCorrect('licenses');
     return pkg;
 
-  } else if (typeof pkg.license === 'object') {
+  } else if (isObject(pkg.license)) {
     utils.msg.fixingProperty('license');
     type = pkg.license.type;
     url = pkg.license.url;
     delete pkg.license;
 
-  } else if (typeof pkg.license === 'string') {
+  } else if (typeOf(pkg.license) === 'string') {
     utils.msg.fixingProperty('license');
 
     if (options.license && options.license === true) {
@@ -174,7 +187,7 @@ normalize.license = function (pkg, options) {
     url = inferred.url;
     delete pkg.license;
 
-  } else if (typeof pkg.license === 'undefined') {
+  } else if (typeOf(pkg.license) === 'undefined') {
     utils.msg.isMissing('license');
     utils.msg.addingProperty('license');
 
@@ -200,26 +213,7 @@ normalize.license = function (pkg, options) {
  * @return {Object} normalized keywords
  */
 
-normalize.keywords = function (pkg, options) {
-  options = options || {};
-  var keywords = pkg.keywords || [];
-
-  if (typeof pkg.keywords === 'undefined') {
-    utils.msg.isMissing('keywords');
-    utils.msg.addingProperty('keywords');
-
-  } else if (pkg.keywords && Array.isArray(pkg.keywords)) {
-    utils.msg.fixingProperty('keywords');
-    keywords = unique(pkg.keywords);
-
-  } else {
-    // If none of the above, something is amiss
-    return utils.msg.isMalformed('keywords');
-  }
-
-  pkg.keywords = utils.difference(keywords, common).sort();
-  return pkg;
-};
+normalize.keywords = require('normalize-keywords');
 
 
 

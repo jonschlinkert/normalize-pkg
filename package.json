@@ -1,6 +1,6 @@
 {
   "name": "normalize-pkg",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Normalize values in package.json to improve compatibility, programmatic readability and usefulness with third party libs.",
   "author": {
     "name": "Jon Schlinkert",
@@ -28,6 +28,9 @@
     "properties",
     "values"
   ],
+  "scripts": {
+    "test": "mocha -R spec"
+  },
   "main": "index.js",
   "engines": {
     "node": ">= 0.8.0"
@@ -37,14 +40,17 @@
     "normalize": "./bin/normalize"
   },
   "dependencies": {
-    "common-words": "~0.1.3",
     "cwd": "~0.3.1",
+    "is-plain-object": "^0.1.0",
+    "kind-of": "^0.1.0",
     "minimist": "0.0.8",
-    "unique-words": "0.0.2",
+    "mixin-deep": "^0.1.0",
+    "normalize-keywords": "^0.1.0",
     "verbalize": "~0.1.2"
   },
   "devDependencies": {
-    "verb": "~0.1.20",
-    "chai": "~1.9.1"
+    "mocha": "*",
+    "should": "^4.0.4",
+    "verb": "^0.2.15"
   }
 }

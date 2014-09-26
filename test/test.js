@@ -1,4 +1,13 @@
-var expect = require('chai').expect;
+/*!
+ * normalize-pkg <https://github.com/jonschlinkert/normalize-pkg>
+ *
+ * Copyright (c) 2014 Jon Schlinkert, contributors.
+ * Licensed under the MIT license.
+ */
+
+'use strict';
+
+var should = require('should');
 
 // Local libs
 var pkg = require('../');
@@ -20,7 +29,7 @@ describe('author', function () {
           url: ''
         }
       };
-      expect(actual).to.eql(expected);
+      actual.should.eql(expected);
     });
   });
 
@@ -40,7 +49,7 @@ describe('author', function () {
           url: 'https://github.com/jonschlinkert'
         }
       };
-      expect(actual).to.eql(expected);
+      actual.should.eql(expected);
     });
   });
 
@@ -53,7 +62,7 @@ describe('author', function () {
           url: ''
         }
       };
-      expect(actual).to.eql(expected);
+      actual.should.eql(expected);
     });
   });
 });
@@ -75,7 +84,7 @@ describe('repo', function () {
           url: 'https://github.com/assemble/verb.git'
         }
       };
-      expect(actual).to.eql(expected);
+      actual.should.eql(expected);
     });
   });
 
@@ -96,7 +105,7 @@ describe('repo', function () {
           url: 'https://github.com/assemble/verb.git'
         }
       };
-      expect(actual).to.eql(expected);
+      actual.should.eql(expected);
     });
   });
 
@@ -110,7 +119,7 @@ describe('repo', function () {
           url: ''
         }
       };
-      expect(actual).to.eql(expected);
+      actual.should.eql(expected);
     });
   });
 });
@@ -129,7 +138,7 @@ describe('bugs', function () {
           url: ''
         }
       };
-      expect(actual).to.eql(expected);
+      actual.should.eql(expected);
     });
   });
 
@@ -143,7 +152,7 @@ describe('bugs', function () {
           url: 'https://github.com/assemble/verb.git'
         }
       };
-      expect(actual).to.eql(expected);
+      actual.should.eql(expected);
     });
   });
 });
@@ -164,14 +173,14 @@ describe('license', function () {
           url: 'http://opensource.org/licenses/MIT'
         }]
       };
-      expect(actual).to.eql(expected);
+      actual.should.eql(expected);
     });
   });
 
   describe('when the `license` property is a string, and `license: true` is defined in the options:', function () {
     it('should return the license property as a string.', function () {
       var actual = pkg.license({license: 'MIT'}, {license: true});
-      expect(actual).to.eql({license: 'MIT'});
+      actual.should.eql({license: 'MIT'});
     });
   });
 
@@ -186,7 +195,7 @@ describe('license', function () {
         ]
       };
       var actual = pkg.license(fixture);
-      expect(actual).to.eql(fixture);
+      actual.should.eql(fixture);
     });
   });
 
@@ -206,7 +215,7 @@ describe('license', function () {
       };
       var actual = pkg.license(fixture);
       var expected = fixture;
-      expect(actual).to.eql(expected);
+      actual.should.eql(expected);
     });
   });
 
@@ -219,7 +228,7 @@ describe('license', function () {
           url: ''
         }]
       };
-      expect(actual).to.eql(expected);
+      actual.should.eql(expected);
     });
   });
 });
