@@ -7,6 +7,7 @@
 
 'use strict';
 
+var keywords = require('normalize-keywords');
 var isObject = require('is-plain-object');
 var extend = require('mixin-deep');
 var typeOf = require('kind-of');
@@ -205,7 +206,6 @@ normalize.license = function (pkg, options) {
 };
 
 
-
 /**
  * Keywords
  *
@@ -213,8 +213,10 @@ normalize.license = function (pkg, options) {
  * @return {Object} normalized keywords
  */
 
-normalize.keywords = require('normalize-keywords');
-
+normalize.keywords = function(pkg, options) {
+  pkg.keywords = keywords(pkg.keywords || []);
+  return pkg;
+};
 
 
 /**
