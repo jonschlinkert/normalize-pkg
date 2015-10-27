@@ -8,6 +8,8 @@ var mapping = {
 };
 
 function normalize(config, options) {
+  var keys = Object.keys(schema);
+
   options = options || {};
   config = rename(config, options.mapping || mapping);
 
@@ -63,7 +65,17 @@ function normalize(config, options) {
     }
   }
 
-  return config;
+  // sort keys
+  var res = {};
+  var len = keys.length, i = -1;
+  while (++i < len) {
+    var key = keys[i];
+    if (config.hasOwnProperty(key)) {
+      res[key] = config[key];
+    }
+  }
+
+  return res;
 };
 
 function rename(config, mapping) {
