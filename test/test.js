@@ -1,234 +1,219 @@
-/*!
- * normalize-pkg <https://github.com/jonschlinkert/normalize-pkg>
- *
- * Copyright (c) 2014 Jon Schlinkert, contributors.
- * Licensed under the MIT license.
- */
-
 'use strict';
 
-var should = require('should');
+require('mocha');
+var assert = require('assert');
+var normalize = require('..');
 
-// Local libs
-var pkg = require('../');
+describe('name', function () {
+  it('should use the defined project name', function () {
+    var pkg = {
+      name: 'foo'
+    };
 
+    var res = normalize(pkg, {extend: false});
+    assert(res.name);
+    assert(res.name === 'foo');
+  });
 
-/**
- * Author
- */
+  it('should determine the correct project name to use', function () {
+    var pkg = {
+      name: ''
+    };
+
+    var res = normalize(pkg, {extend: false});
+    assert(res.name);
+    assert(res.name === 'normalize-pkg');
+  });
+});
+
+describe('version', function () {
+  it('should use the given version', function () {
+    var pkg = {
+      version: '1.0.0'
+    };
+
+    var res = normalize(pkg, {extend: false});
+    assert(res.version);
+    assert(res.version === '1.0.0');
+  });
+
+  it('should use the default version', function () {
+    var pkg = {
+      version: ''
+    };
+
+    var res = normalize(pkg, {extend: false});
+    assert(res.version);
+    assert(res.version === '0.1.0');
+  });
+});
+
+describe('homepage', function () {
+  it('should use the given homepage', function () {
+    var pkg = {
+      homepage: 'https://github.com/assemble/assemble'
+    };
+
+    var res = normalize(pkg, {extend: false});
+    assert(res.homepage);
+    assert(res.homepage === 'https://github.com/assemble/assemble');
+  });
+
+  it('should get homepage from repository.url', function () {
+    var pkg = {
+      homepage: '',
+      repository: 'git://github.com/jonschlinkert/normalize-pkg.git'
+    };
+
+    var res = normalize(pkg, {extend: false});
+    assert(res.homepage);
+    assert(res.homepage === 'https://github.com/jonschlinkert/normalize-pkg');
+  });
+});
 
 describe('author', function () {
-  describe('when the `author` property is a string:', function () {
-    it('should return an object, using the value from `author` to populate `author.name`', function () {
-      var actual = pkg.author({
-        author: 'Jon Schlinkert'
-      });
-      var expected = {
-        author: {
-          name: 'Jon Schlinkert',
-          url: ''
-        }
-      };
-      actual.should.eql(expected);
-    });
+  it('should use the given author as a string', function () {
+    var pkg = {author: 'Jon Schlinkert'};
+
+    var res = normalize(pkg, {extend: false});
+    assert(res.author);
+    assert(res.author === 'Jon Schlinkert');
   });
 
-  describe('when no `author` property exists, but an `authors` property exists with only one author:', function () {
-    it('should convert the `authors` array into an `author` object', function () {
-      var actual = pkg.author({
-        authors: [
-          {
-            name: 'Jon Schlinkert',
-            url: 'https://github.com/jonschlinkert'
-          }
-        ]
-      });
-      var expected = {
-        author: {
-          name: 'Jon Schlinkert',
-          url: 'https://github.com/jonschlinkert'
-        }
-      };
-      actual.should.eql(expected);
-    });
-  });
+  it('should convert an author object to a string', function () {
+    var pkg = {author: {name: 'Jon Schlinkert', url: 'https://github.com/jonschlinkert'}};
 
-  describe('when no `author` or `authors` properties exist:', function () {
-    it('should return an `author` object with empty values', function () {
-      var actual = pkg.author({});
-      var expected = {
-        author: {
-          name: '',
-          url: ''
-        }
-      };
-      actual.should.eql(expected);
-    });
+    var res = normalize(pkg, {extend: false});
+    assert(res.author);
+    assert(res.author === 'Jon Schlinkert (https://github.com/jonschlinkert)');
   });
 });
 
+describe('repository', function () {
+  it('should use the given repository', function () {
+    var pkg = {repository: 'jonschlinkert/foo'};
 
-/**
- * Repository
- */
-
-describe('repo', function () {
-  describe('when the `repository` property is a string:', function () {
-    it('should return an object, using the value from `repository` to populate `repository.type`', function () {
-      var actual = pkg.repo({
-        repository: 'https://github.com/assemble/verb.git'
-      });
-      var expected = {
-        repository: {
-          type: 'git',
-          url: 'https://github.com/assemble/verb.git'
-        }
-      };
-      actual.should.eql(expected);
-    });
+    var res = normalize(pkg, {extend: false});
+    assert(res.repository);
+    assert(res.repository === 'jonschlinkert/foo');
   });
 
-  describe('when no `repository` property exists, but a `repositories` property exists with only one repository:', function () {
-    it('should convert the `repositories` array into a `repository` object', function () {
-      var actual = pkg.repo({
-        repositories: [
-          {
-            type: 'git',
-            url: 'https://github.com/assemble/verb.git'
-          }
-        ]
-      });
-
-      var expected = {
-        repository: {
-          type: 'git',
-          url: 'https://github.com/assemble/verb.git'
-        }
-      };
-      actual.should.eql(expected);
-    });
+  it('should use the git remote origin url', function () {
+    var pkg = {repository: ''};
+    var res = normalize(pkg, {extend: false});
+    assert(res.repository);
+    assert(res.repository === 'jonschlinkert/normalize-pkg');
   });
 
-
-  describe('when no `repository` property exists:', function () {
-    it('should return a `repository` object with empty values', function () {
-      var actual = pkg.repo({});
-      var expected = {
-        repository: {
-          type: '',
-          url: ''
-        }
-      };
-      actual.should.eql(expected);
-    });
+  it('should convert repository.url to a string', function () {
+    var pkg = {repository: {url: 'https://github.com/jonschlinkert/foo.git'}};
+    var res = normalize(pkg, {extend: false});
+    assert(res.repository);
+    assert(res.repository === 'jonschlinkert/foo');
   });
 });
-
-
-/**
- * Bugs
- */
-
-describe('bugs', function () {
-  describe('when no `bugs` property exists:', function () {
-    it('should return a `bugs` object with empty values', function () {
-      var actual = pkg.bugs({});
-      var expected = {
-        bugs: {
-          url: ''
-        }
-      };
-      actual.should.eql(expected);
-    });
-  });
-
-  describe('when the `bugs` property is a string:', function () {
-    it('should return an object, using the value from `bugs` to populate `bugs.url`', function () {
-      var actual = pkg.bugs({
-        bugs: 'https://github.com/assemble/verb.git'
-      });
-      var expected = {
-        bugs: {
-          url: 'https://github.com/assemble/verb.git'
-        }
-      };
-      actual.should.eql(expected);
-    });
-  });
-});
-
-
-/**
- * License
- */
 
 describe('license', function () {
+  it('should convert a licenses array to a license string', function () {
+    var pkg = {
+      licenses: [
+        {type: 'MIT', url: 'https://github.com/jonschlinkert/normalize-pkg/blob/master/LICENSE-MIT'}
+      ]
+    };
 
-  describe('when the `license` property is a string:', function () {
-    it('should return an array, using the value from `license` to populate `license.type`, and inferring the URL from the type.', function () {
-      var actual = pkg.license({license: 'MIT'}, {license: false});
-      var expected = {
-        licenses: [{
-          type: 'MIT',
-          url: 'http://opensource.org/licenses/MIT'
-        }]
-      };
-      actual.should.eql(expected);
-    });
+    var res = normalize(pkg, {extend: false});
+    assert(!res.licenses);
+    assert(res.license);
+    assert(typeof res.license === 'string');
+    assert(res.license === 'MIT');
+  });
+});
+
+describe('files', function () {
+  it('should add main to files array if empty', function () {
+    var pkg = {
+      files: [],
+      main: 'foo.js'
+    };
+
+    var res = normalize(pkg, {extend: false});
+    assert(res.files.length);
+    assert(res.files.indexOf('foo.js') !== -1);
+  });
+});
+
+describe('dependencies', function () {
+  it('should move common devDeps to devDependencies', function () {
+    var pkg = {dependencies: {'mocha': '^0.2.2'}};
+    var res = normalize(pkg, {extend: false});
+    assert(!res.dependencies);
+    assert(res.devDependencies);
+    assert(res.devDependencies.mocha === '^0.2.2');
   });
 
-  describe('when the `license` property is a string, and `license: true` is defined in the options:', function () {
-    it('should return the license property as a string.', function () {
-      var actual = pkg.license({license: 'MIT'}, {license: true});
-      actual.should.eql({license: 'MIT'});
-    });
+  it('should remove dependencies when empty', function () {
+    var pkg = {dependencies: {}};
+    var res = normalize(pkg, {extend: false});
+    assert(!res.dependencies);
+  });
+});
+
+describe('devDependencies', function () {
+  it('should clean up devDependencies', function () {
+    var pkg = {
+      devDependencies: {
+        'verb-tag-jscomments': '^0.2.2'
+      }
+    };
+    var res = normalize(pkg, {extend: false});
+    assert(!res.devDependencies);
   });
 
-  describe('when no `license` property exists, but a `licenses` property exists with only one license:', function () {
-    it('should convert the `licenses` array into a `license` object', function () {
-      var fixture = {
-        licenses: [
-          {
-            type: 'Apache',
-            url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-          }
-        ]
-      };
-      var actual = pkg.license(fixture);
-      actual.should.eql(fixture);
-    });
+  it('should remove devDependencies if empty', function () {
+    var pkg = {devDependencies: {}};
+    var res = normalize(pkg, {extend: false});
+    assert(!res.devDependencies);
   });
 
-  describe('when a `licenses` property exists with only one licenses:', function () {
-    it('should leave the property alone, since this is correct.', function () {
-      var fixture = {
-        licenses: [
-          {
-            type: 'Apache',
-            url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-          },
-          {
-            type: 'MIT',
-            url: 'http://opensource.org/licenses/MIT'
-          }
-        ]
-      };
-      var actual = pkg.license(fixture);
-      var expected = fixture;
-      actual.should.eql(expected);
-    });
+  it('should remove old versions of verb', function () {
+    var pkg = {devDependencies: {'verb': '^0.4.0'}};
+    var res = normalize(pkg, {extend: false});
+    assert(!res.devDependencies);
   });
+});
 
-  describe('when no `license` or `licenses` properties exist:', function () {
-    it('should return a `license` object with empty values', function () {
-      var actual = pkg.license({});
-      var expected = {
-        licenses: [{
-          type: '',
-          url: ''
-        }]
-      };
-      actual.should.eql(expected);
-    });
+describe('scripts', function () {
+  it('should clean up mocha scripts', function () {
+    var pkg = {scripts: {test: 'mocha -R spec'} };
+
+    var res = normalize(pkg, {extend: false});
+    assert(res.scripts);
+    assert(typeof res.scripts === 'object');
+    assert(res.scripts.test === 'mocha');
+  });
+});
+
+describe('preferGlobal', function () {
+  it('should set preferGlobal when `bin` exists', function () {
+    var pkg = {preferGlobal: false};
+
+    var res = normalize(pkg, {extend: false});
+    assert(res.preferGlobal === true);
+  });
+});
+
+describe('bin', function () {
+  it('should throw when bin points to a non-existant filepath', function (cb) {
+    var pkg = {bin: {foo: 'bin/foo.js'}};
+
+    try {
+      normalize(pkg, {extend: false});
+      cb(new Error('expected an error'));
+    } catch(err) {
+      assert(err);
+      assert(err.message);
+      assert(err.message === 'package.json bin > bin/foo.js does not exist');
+      cb();
+    }
   });
 });

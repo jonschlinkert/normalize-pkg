@@ -20,14 +20,6 @@
   "bugs": {
     "url": "https://github.com/jonschlinkert/normalize-pkg/issues"
   },
-  "keywords": [
-    "fix",
-    "normalize",
-    "package",
-    "pkg",
-    "properties",
-    "values"
-  ],
   "scripts": {
     "test": "mocha -R spec"
   },
@@ -40,17 +32,33 @@
     "normalize": "./bin/normalize"
   },
   "dependencies": {
-    "cwd": "~0.3.1",
-    "is-plain-object": "^0.1.0",
+    "engine": "^0.1.8",
+    "extend-shallow": "^2.0.1",
+    "get-value": "^1.2.1",
     "kind-of": "^0.1.0",
-    "minimist": "0.0.8",
-    "mixin-deep": "^0.1.0",
-    "normalize-keywords": "^0.1.0",
-    "verbalize": "~0.1.2"
+    "lazy-cache": "^0.2.4",
+    "load-pkg": "^2.0.1",
+    "matched": "^0.3.2",
+    "parse-author": "^0.2.0",
+    "parse-git-config": "^0.3.1",
+    "parse-github-url": "^0.2.1",
+    "project-name": "^0.2.0",
+    "remote-origin-url": "^0.4.0",
+    "semver": "^5.0.3",
+    "set-value": "^0.2.0",
+    "stringify-author": "^0.1.1",
+    "write-json": "^0.2.1"
   },
   "devDependencies": {
-    "mocha": "*",
-    "should": "^4.0.4",
-    "verb": "^0.2.15"
-  }
+    "mocha": "^2.3.3",
+    "should": "^4.0.4"
+  },
+  "keywords": [
+    "fix",
+    "normalize",
+    "package",
+    "pkg",
+    "properties",
+    "values"
+  ]
 }
