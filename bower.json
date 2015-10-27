@@ -1,7 +1,46 @@
 {
   "name": "normalize-pkg",
-  "version": "0.1.5",
+  "description": "Normalize values in package.json to improve compatibility, programmatic readability and usefulness with third party libs.",
+  "repository": "jonschlinkert/normalize-pkg",
+  "license": "MIT",
+  "homepage": "https://github.com/jonschlinkert/normalize-pkg/",
+  "authors": [
+    "Jon Schlinkert (https://github.com/jonschlinkert)"
+  ],
   "main": [
     "index.js"
+  ],
+  "dependencies": {
+    "engine": "^0.1.8",
+    "extend-shallow": "^2.0.1",
+    "get-value": "^1.2.1",
+    "kind-of": "^0.1.0",
+    "lazy-cache": "^0.2.4",
+    "load-pkg": "^2.0.1",
+    "matched": "^0.3.2",
+    "parse-author": "^0.2.0",
+    "parse-git-config": "^0.3.1",
+    "parse-github-url": "^0.2.1",
+    "project-name": "^0.2.0",
+    "remote-origin-url": "^0.4.0",
+    "semver": "^5.0.3",
+    "set-value": "^0.2.0",
+    "stringify-author": "^0.1.1",
+    "write-json": "^0.2.1"
+  },
+  "devDependencies": {
+    "mocha": "^2.3.3",
+    "should": "^4.0.4"
+  },
+  "keywords": [
+    "config",
+    "fix",
+    "json",
+    "normalize",
+    "package",
+    "package-json",
+    "pkg",
+    "properties",
+    "values"
   ]
 }
