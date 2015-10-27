@@ -74,15 +74,16 @@ function normalize(config, options) {
       res[key] = config[key];
     }
   }
-
   return res;
 };
 
+
 function rename(config, mapping) {
   for (var key in mapping) {
-    if (mapping.hasOwnProperty(key)) {
-      config[key] = config[mapping[key]];
-      delete config[mapping[key]];
+    var val = mapping[key];
+    if (config.hasOwnProperty(val)) {
+      config[key] = config[val];
+      delete config[val];
     }
   }
   return config;

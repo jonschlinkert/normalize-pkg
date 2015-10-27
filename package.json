@@ -26,6 +26,7 @@
     "normalize": "./bin/normalize"
   },
   "dependencies": {
+    "array-unique": "^0.2.1",
     "engine": "^0.1.8",
     "extend-shallow": "^2.0.1",
     "get-value": "^1.2.1",
@@ -44,13 +45,15 @@
     "write-json": "^0.2.1"
   },
   "devDependencies": {
-    "mocha": "^2.3.3",
-    "should": "^4.0.4"
+    "mocha": "^2.3.3"
   },
   "keywords": [
+    "config",
     "fix",
+    "json",
     "normalize",
     "package",
+    "package-json",
     "pkg",
     "properties",
     "values"
