@@ -45,9 +45,7 @@ describe('empty', function() {
 
 describe('name', function() {
   it('should use the defined project name', function() {
-    var pkg = {
-      name: 'foo'
-    };
+    var pkg = {name: 'foo'};
 
     var res = normalize(pkg, {extend: false});
     assert(res.name);
@@ -128,6 +126,16 @@ describe('author', function() {
   });
 });
 
+describe('contributors', function() {
+  it('should convert contributor objects to strings', function() {
+    var pkg = {contributors: [{name: 'Jon Schlinkert', url: 'https://github.com/jonschlinkert'}]};
+
+    var res = normalize(pkg, {extend: false});
+    assert(res.contributors);
+    assert(res.contributors[0] === 'Jon Schlinkert (https://github.com/jonschlinkert)');
+  });
+});
+
 describe('repository', function() {
   it('should use the given repository', function() {
     var pkg = {repository: 'jonschlinkert/foo'};
@@ -153,6 +161,18 @@ describe('repository', function() {
 });
 
 describe('license', function() {
+  it('should convert a license object to a string', function() {
+    var pkg = {
+      license: {type: 'MIT', url: 'https://github.com/jonschlinkert/normalize-pkg/blob/master/LICENSE-MIT'}
+    };
+
+    var res = normalize(pkg, {extend: false});
+    assert(typeof res.license === 'string');
+    assert(res.license === 'MIT');
+  });
+});
+
+describe('licenses', function() {
   it('should convert a licenses array to a license string', function() {
     var pkg = {
       licenses: [
@@ -169,7 +189,7 @@ describe('license', function() {
 });
 
 describe('files', function() {
-  it('should add main to files array if empty', function() {
+  it('should add index.js to files array if empty', function() {
     var pkg = {
       files: [],
       main: 'index.js'
@@ -179,11 +199,20 @@ describe('files', function() {
     assert(res.files.length);
     assert(res.files.indexOf('index.js') !== -1);
   });
+
+  it('should remove main if it does not exist', function() {
+    var pkg = {
+      main: 'foo.js'
+    };
+
+    var res = normalize(pkg, {extend: false});
+    assert(!res.main);
+  });
 });
 
 describe('dependencies', function() {
   it('should move common devDeps to devDependencies', function() {
-    var pkg = {dependencies: {'mocha': '^0.2.2'}};
+    var pkg = {dependencies: {'mocha': '^0.2.2', should: '*', chai: '*'}};
     var res = normalize(pkg, {extend: false});
     assert(!res.dependencies);
     assert(res.devDependencies);
@@ -232,6 +261,22 @@ describe('scripts', function() {
   });
 });
 
+describe('keywords', function() {
+  it('should remove keywords is empty', function() {
+    var pkg = {keywords: []};
+    var res = normalize(pkg, {extend: false});
+    assert(!res.keywords);
+  });
+
+  it('should sort keywords', function() {
+    var pkg = { keywords: ['foo', 'bar', 'baz'] };
+    var res = normalize(pkg, {extend: false});
+    assert(res.keywords[0] === 'bar');
+    assert(res.keywords[1] === 'baz');
+    assert(res.keywords[2] === 'foo');
+  });
+});
+
 describe('preferGlobal', function() {
   it('should remove preferGlobal when `bin` does not exist', function() {
     var pkg = {preferGlobal: true};
@@ -256,3 +301,4 @@ describe('bin', function() {
     }
   });
 });
+
