@@ -9,3 +9,4 @@ TODO.md
 
 *.sublime-*
 vendor
+coverage

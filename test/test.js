@@ -4,8 +4,47 @@ require('mocha');
 var assert = require('assert');
 var normalize = require('..');
 
-describe('name', function () {
-  it('should use the defined project name', function () {
+describe('empty', function() {
+  it('should not blow up with no properties', function() {
+    var res = normalize({});
+    assert(res);
+  });
+
+  it('should add a homepage from repository', function() {
+    var res = normalize({});
+    assert(res.homepage);
+    assert(res.homepage === 'https://github.com/jonschlinkert/normalize-pkg');
+  });
+
+  it('should not add an empty author field', function() {
+    var res = normalize({});
+    assert(!res.hasOwnProperty('author'));
+  });
+
+  it('should not add an empty authors field', function() {
+    var res = normalize({});
+    assert(!res.hasOwnProperty('authors'));
+  });
+
+  it('should not add an empty maintainers field', function() {
+    var res = normalize({});
+    assert(!res.hasOwnProperty('maintainers'));
+  });
+
+  it('should not add an empty contributors field', function() {
+    var res = normalize({});
+    assert(!res.hasOwnProperty('contributors'));
+  });
+
+  it('should add MIT as the default license', function() {
+    var res = normalize({});
+    assert(res.hasOwnProperty('license'));
+    assert(res.license === 'MIT');
+  });
+});
+
+describe('name', function() {
+  it('should use the defined project name', function() {
     var pkg = {
       name: 'foo'
     };
@@ -15,7 +54,7 @@ describe('name', function () {
     assert(res.name === 'foo');
   });
 
-  it('should determine the correct project name to use', function () {
+  it('should determine the correct project name to use', function() {
     var pkg = {
       name: ''
     };
@@ -26,8 +65,8 @@ describe('name', function () {
   });
 });
 
-describe('version', function () {
-  it('should use the given version', function () {
+describe('version', function() {
+  it('should use the given version', function() {
     var pkg = {
       version: '1.0.0'
     };
@@ -37,7 +76,7 @@ describe('version', function () {
     assert(res.version === '1.0.0');
   });
 
-  it('should use the default version', function () {
+  it('should use the default version', function() {
     var pkg = {
       version: ''
     };
@@ -48,8 +87,8 @@ describe('version', function () {
   });
 });
 
-describe('homepage', function () {
-  it('should use the given homepage', function () {
+describe('homepage', function() {
+  it('should use the given homepage', function() {
     var pkg = {
       homepage: 'https://github.com/assemble/assemble'
     };
@@ -59,7 +98,7 @@ describe('homepage', function () {
     assert(res.homepage === 'https://github.com/assemble/assemble');
   });
 
-  it('should get homepage from repository.url', function () {
+  it('should get homepage from repository.url', function() {
     var pkg = {
       homepage: '',
       repository: 'git://github.com/jonschlinkert/normalize-pkg.git'
@@ -71,8 +110,8 @@ describe('homepage', function () {
   });
 });
 
-describe('author', function () {
-  it('should use the given author as a string', function () {
+describe('author', function() {
+  it('should use the given author as a string', function() {
     var pkg = {author: 'Jon Schlinkert'};
 
     var res = normalize(pkg, {extend: false});
@@ -80,7 +119,7 @@ describe('author', function () {
     assert(res.author === 'Jon Schlinkert');
   });
 
-  it('should convert an author object to a string', function () {
+  it('should convert an author object to a string', function() {
     var pkg = {author: {name: 'Jon Schlinkert', url: 'https://github.com/jonschlinkert'}};
 
     var res = normalize(pkg, {extend: false});
@@ -89,8 +128,8 @@ describe('author', function () {
   });
 });
 
-describe('repository', function () {
-  it('should use the given repository', function () {
+describe('repository', function() {
+  it('should use the given repository', function() {
     var pkg = {repository: 'jonschlinkert/foo'};
 
     var res = normalize(pkg, {extend: false});
@@ -98,14 +137,14 @@ describe('repository', function () {
     assert(res.repository === 'jonschlinkert/foo');
   });
 
-  it('should use the git remote origin url', function () {
+  it('should use the git remote origin url', function() {
     var pkg = {repository: ''};
     var res = normalize(pkg, {extend: false});
     assert(res.repository);
     assert(res.repository === 'jonschlinkert/normalize-pkg');
   });
 
-  it('should convert repository.url to a string', function () {
+  it('should convert repository.url to a string', function() {
     var pkg = {repository: {url: 'https://github.com/jonschlinkert/foo.git'}};
     var res = normalize(pkg, {extend: false});
     assert(res.repository);
@@ -113,8 +152,8 @@ describe('repository', function () {
   });
 });
 
-describe('license', function () {
-  it('should convert a licenses array to a license string', function () {
+describe('license', function() {
+  it('should convert a licenses array to a license string', function() {
     var pkg = {
       licenses: [
         {type: 'MIT', url: 'https://github.com/jonschlinkert/normalize-pkg/blob/master/LICENSE-MIT'}
@@ -129,37 +168,37 @@ describe('license', function () {
   });
 });
 
-describe('files', function () {
-  it('should add main to files array if empty', function () {
+describe('files', function() {
+  it('should add main to files array if empty', function() {
     var pkg = {
       files: [],
-      main: 'foo.js'
+      main: 'index.js'
     };
 
     var res = normalize(pkg, {extend: false});
     assert(res.files.length);
-    assert(res.files.indexOf('foo.js') !== -1);
+    assert(res.files.indexOf('index.js') !== -1);
   });
 });
 
-describe('dependencies', function () {
-  it('should move common devDeps to devDependencies', function () {
+describe('dependencies', function() {
+  it('should move common devDeps to devDependencies', function() {
     var pkg = {dependencies: {'mocha': '^0.2.2'}};
     var res = normalize(pkg, {extend: false});
     assert(!res.dependencies);
     assert(res.devDependencies);
-    assert(res.devDependencies.mocha === '^0.2.2');
+    assert(res.devDependencies.mocha === '*');
   });
 
-  it('should remove dependencies when empty', function () {
+  it('should remove dependencies when empty', function() {
     var pkg = {dependencies: {}};
     var res = normalize(pkg, {extend: false});
     assert(!res.dependencies);
   });
 });
 
-describe('devDependencies', function () {
-  it('should clean up devDependencies', function () {
+describe('devDependencies', function() {
+  it('should clean up devDependencies', function() {
     var pkg = {
       devDependencies: {
         'verb-tag-jscomments': '^0.2.2'
@@ -169,21 +208,21 @@ describe('devDependencies', function () {
     assert(!res.devDependencies);
   });
 
-  it('should remove devDependencies if empty', function () {
+  it('should remove devDependencies if empty', function() {
     var pkg = {devDependencies: {}};
     var res = normalize(pkg, {extend: false});
     assert(!res.devDependencies);
   });
 
-  it('should remove old versions of verb', function () {
+  it('should remove old versions of verb', function() {
     var pkg = {devDependencies: {'verb': '^0.4.0'}};
     var res = normalize(pkg, {extend: false});
     assert(!res.devDependencies);
   });
 });
 
-describe('scripts', function () {
-  it('should clean up mocha scripts', function () {
+describe('scripts', function() {
+  it('should clean up mocha scripts', function() {
     var pkg = {scripts: {test: 'mocha -R spec'} };
 
     var res = normalize(pkg, {extend: false});
@@ -193,23 +232,23 @@ describe('scripts', function () {
   });
 });
 
-describe('preferGlobal', function () {
-  it('should set preferGlobal when `bin` exists', function () {
-    var pkg = {preferGlobal: false};
+describe('preferGlobal', function() {
+  it('should remove preferGlobal when `bin` does not exist', function() {
+    var pkg = {preferGlobal: true};
 
     var res = normalize(pkg, {extend: false});
-    assert(res.preferGlobal === true);
+    assert(!res.preferGlobal);
   });
 });
 
-describe('bin', function () {
-  it('should throw when bin points to a non-existant filepath', function (cb) {
+describe('bin', function() {
+  it('should throw when bin points to an invalid filepath', function(cb) {
     var pkg = {bin: {foo: 'bin/foo.js'}};
 
     try {
       normalize(pkg, {extend: false});
       cb(new Error('expected an error'));
-    } catch(err) {
+    } catch (err) {
       assert(err);
       assert(err.message);
       assert(err.message === 'package.json bin > bin/foo.js does not exist');
