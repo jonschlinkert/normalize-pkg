@@ -1,5 +1,6 @@
 'use strict';
 
+var define = require('define-property');
 var schema = require('./lib/schema');
 var utils = require('./lib/utils');
 var mapping = {'license': 'licenses'};
@@ -9,33 +10,34 @@ var mapping = {'license': 'licenses'};
  */
 
 function normalize(config, options) {
-  var keys = Object.keys(schema);
+  var defaults = schema(options);
+  var keys = Object.keys(defaults);
   var diff = utils.omit(config, keys);
   var fns = [];
 
   options = options || {};
   config = rename(config, options.mapping || mapping);
   if (config.analyze === false) {
-    console.log('stopping early, "analyze: false" is defined in package.json.');
+    console.log('normalize-pkg: "analyze: false" is defined in package.json.');
     return config;
   }
 
   var ctx = utils.extend({}, config);
-  ctx.set = function(key, val) {
-    utils.set(ctx, key, val);
-    return ctx;
-  };
+  define(ctx, 'set', function (key, val) {
+    utils.set(this, key, val);
+    return this;
+  });
 
-  for (var key in schema) {
+  for (var key in defaults) {
     if (!config.hasOwnProperty(key) && options.extend === false) {
       continue;
     }
 
-    var val = schema[key];
+    var val = defaults[key];
     var value = config[key];
 
     if (typeof val.value === 'function') {
-      var res = val.value.call(ctx, key, value, config, schema);
+      var res = val.value.call(ctx, key, value, config, defaults);
       if (typeof res === 'function') {
         fns.push({name: key, fn: res});
       } else {
@@ -64,7 +66,7 @@ function normalize(config, options) {
     fns.forEach(function(field) {
       var key = field.name;
       var fn = field.fn;
-      fn(key, config[key], config, schema);
+      fn(key, config[key], config, defaults);
     });
   }
 

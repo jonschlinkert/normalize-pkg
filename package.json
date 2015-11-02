@@ -26,6 +26,7 @@
     "ansi-red": "^0.1.1",
     "ansi-yellow": "^0.1.1",
     "array-unique": "^0.2.1",
+    "define-property": "^0.2.5",
     "extend-shallow": "^2.0.1",
     "get-value": "^1.2.1",
     "kind-of": "^0.1.0",
