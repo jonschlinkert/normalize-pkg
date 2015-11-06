@@ -1,7 +1,7 @@
 {
   "name": "normalize-pkg",
   "description": "Normalize values in package.json to improve compatibility, programmatic readability and usefulness with third party libs.",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "homepage": "https://github.com/jonschlinkert/normalize-pkg/",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "jonschlinkert/normalize-pkg",
@@ -14,7 +14,7 @@
     "lib"
   ],
   "engines": {
-    "node": ">= 0.8.0"
+    "node": ">= 0.10.0"
   },
   "scripts": {
     "test": "mocha"
