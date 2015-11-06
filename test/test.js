@@ -52,6 +52,22 @@ describe('name', function() {
     assert(res.name === 'foo');
   });
 
+  it('should use the value function defined on options', function() {
+    var pkg = {name: 'foo'};
+    var opts = {
+      extend: false,
+      name: {
+        value: function custom() {
+          return 'bar'
+        }
+      }
+    };
+
+    var res = normalize(pkg, opts);
+    assert(res.name);
+    assert(res.name === 'bar');
+  });
+
   it('should determine the correct project name to use', function() {
     var pkg = {
       name: ''
@@ -157,6 +173,65 @@ describe('repository', function() {
     var res = normalize(pkg, {extend: false});
     assert(res.repository);
     assert(res.repository === 'jonschlinkert/foo');
+  });
+});
+
+describe('bugs', function() {
+  it('should use the given bugs value', function() {
+    var pkg = {bugs: {url: 'jonschlinkert/foo'}};
+
+    var res = normalize(pkg, {extend: false});
+    assert(res.bugs);
+    assert.equal(res.bugs.url, 'jonschlinkert/foo');
+  });
+
+  it('should use the value function passed on options', function() {
+    var pkg = {bugs: ''};
+    var res = normalize(pkg, {
+      extend: false,
+      bugs: {
+        value: function custom() {
+          return {url: 'abc'}
+        }
+      }
+    });
+
+    assert(res.bugs);
+    assert.equal(res.bugs.url, 'abc');
+  });
+
+  it('should use a custom type passed on options', function() {
+    var pkg = {bugs: '', repository: 'https://github.com/foo'};
+    var res = normalize(pkg, {
+      extend: false,
+      bugs: {
+        type: 'object',
+        value: function custom(key, val, config) {
+          var bugs = {};
+          bugs.url = config.repository + '/bugs'
+          return bugs;
+        }
+      }
+    });
+
+    assert.equal(typeof res.bugs, 'object');
+    assert(res.bugs.url);
+    assert.equal(res.bugs.url, 'https://github.com/foo/bugs');
+  });
+
+  it('should convert bugs.url to a string when specified', function() {
+    var pkg = {bugs: {url: 'https://github.com/jonschlinkert/foo.git'}};
+    var res = normalize(pkg, {
+      extend: false,
+      bugs: {
+        type: 'string',
+        value: function (key, val) {
+          return val.url;
+        }
+      }
+    });
+    assert(res.bugs);
+    assert.equal(res.bugs, 'https://github.com/jonschlinkert/foo.git');
   });
 });
 
