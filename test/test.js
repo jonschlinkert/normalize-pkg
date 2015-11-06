@@ -350,6 +350,12 @@ describe('keywords', function() {
     assert(res.keywords[1] === 'baz');
     assert(res.keywords[2] === 'foo');
   });
+
+  it('should remove duplicates', function() {
+    var pkg = { keywords: ['foo', 'foo', 'foo', 'foo', 'bar', 'baz'] };
+    var res = normalize(pkg, {extend: false});
+    assert.equal(res.keywords.length, 3);
+  });
 });
 
 describe('preferGlobal', function() {
