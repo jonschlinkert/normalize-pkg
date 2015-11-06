@@ -1,56 +1,65 @@
 {
   "name": "normalize-pkg",
-  "version": "0.1.7",
   "description": "Normalize values in package.json to improve compatibility, programmatic readability and usefulness with third party libs.",
-  "author": {
-    "name": "Jon Schlinkert",
-    "url": "https://github.com/jonschlinkert"
-  },
+  "version": "0.1.7",
   "homepage": "https://github.com/jonschlinkert/normalize-pkg/",
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/jonschlinkert/normalize-pkg/blob/master/LICENSE-MIT"
-    }
-  ],
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/jonschlinkert/normalize-pkg.git"
-  },
+  "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
+  "repository": "jonschlinkert/normalize-pkg",
   "bugs": {
     "url": "https://github.com/jonschlinkert/normalize-pkg/issues"
   },
+  "license": "MIT",
+  "files": [
+    "index.js",
+    "lib"
+  ],
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "array-unique": "^0.2.1",
+    "define-property": "^0.2.5",
+    "extend-shallow": "^2.0.1",
+    "get-value": "^2.0.0",
+    "kind-of": "^2.0.1",
+    "lazy-cache": "^0.2.4",
+    "matched": "^0.3.2",
+    "mixin-deep": "^1.1.3",
+    "object.omit": "^2.0.0",
+    "parse-author": "^0.2.0",
+    "parse-github-url": "^0.2.1",
+    "project-name": "^0.2.1",
+    "remote-origin-url": "^0.4.0",
+    "semver": "^5.0.3",
+    "set-value": "^0.3.0",
+    "stringify-author": "^0.1.1"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "gulp-eslint": "^1.0.0",
+    "gulp-istanbul": "^0.10.2",
+    "gulp-mocha": "^2.1.3",
+    "mocha": "*"
+  },
   "keywords": [
+    "config",
     "fix",
+    "json",
     "normalize",
     "package",
+    "package-json",
     "pkg",
     "properties",
     "values"
   ],
-  "scripts": {
-    "test": "mocha -R spec"
-  },
-  "main": "index.js",
-  "engines": {
-    "node": ">= 0.8.0"
-  },
-  "preferGlobal": true,
-  "bin": {
-    "normalize": "./bin/normalize"
-  },
-  "dependencies": {
-    "cwd": "~0.3.1",
-    "is-plain-object": "^0.1.0",
-    "kind-of": "^0.1.0",
-    "minimist": "0.0.8",
-    "mixin-deep": "^0.1.0",
-    "normalize-keywords": "^0.1.0",
-    "verbalize": "~0.1.2"
-  },
-  "devDependencies": {
-    "mocha": "*",
-    "should": "^4.0.4",
-    "verb": "^0.2.15"
+  "verb": {
+    "related": {
+      "list": [
+        "update"
+      ]
+    }
   }
 }
