@@ -21,6 +21,7 @@ function normalize(pkg, options) {
 
   var defaults = schema(options);
   var opts = utils.merge({}, defaults, options);
+  var resolve = utils.expand(opts);
   var keys = Object.keys(opts);
   var diff = utils.omit(pkg, keys);
   var fns = [];
@@ -61,7 +62,11 @@ function normalize(pkg, options) {
     }
 
     if (pkg[key] && utils.typeOf(pkg[key]) !== val.type) {
-      throw new TypeError('expected ' + key + ' to be type: ' + val.type);
+      if (val.hasOwnProperty('template')) {
+        pkg[key] = resolve(val.template, pkg);
+      } else {
+        throw new TypeError('expected ' + key + ' to be type: ' + val.type);
+      }
     }
   }
 
