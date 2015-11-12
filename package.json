@@ -1,7 +1,7 @@
 {
   "name": "normalize-pkg",
   "description": "Normalize values in package.json to improve compatibility, programmatic readability and usefulness with third party libs.",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "homepage": "https://github.com/jonschlinkert/normalize-pkg/",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "jonschlinkert/normalize-pkg",
@@ -34,8 +34,7 @@
     "parse-github-url": "^0.2.1",
     "project-name": "^0.2.1",
     "remote-origin-url": "^0.4.0",
-    "semver": "^5.0.3",
-    "set-value": "^0.3.0",
+    "set-value": "^0.3.1",
     "stringify-author": "^0.1.1"
   },
   "devDependencies": {
