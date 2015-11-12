@@ -10,6 +10,11 @@ var mapping = {'license': 'licenses'};
 
 function normalize(pkg, options) {
   options = options || {};
+
+  if (typeof options.schema === 'function') {
+    schema = options.schema;
+  }
+
   pkg = pkg || {};
 
   if (pkg.analyze === false) {
@@ -105,3 +110,9 @@ function rename(pkg, mapping) {
 }
 
 module.exports = normalize;
+
+/**
+ * Expose schema
+ */
+
+module.exports.schema = schema;

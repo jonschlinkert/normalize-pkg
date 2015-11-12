@@ -317,12 +317,6 @@ describe('devDependencies', function() {
     var res = normalize(pkg, {extend: false});
     assert(!res.devDependencies);
   });
-
-  it('should remove old versions of verb', function() {
-    var pkg = {devDependencies: {'verb': '^0.4.0'}};
-    var res = normalize(pkg, {extend: false});
-    assert(!res.devDependencies);
-  });
 });
 
 describe('scripts', function() {
