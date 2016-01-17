@@ -1,118 +1,131 @@
 'use strict';
 
-var schema = require('./lib/schema');
+var Schema = require('reconcile');
+var normalizers = require('./lib/normalizers');
+var validators = require('./lib/validators');
 var utils = require('./lib/utils');
-var mapping = {'license': 'licenses'};
 
-/**
- * Normalize package.json with the given `options`
- */
+// module.exports = function(config, options) {
+//   var keys = Object.keys(config);
+//   var opts = utils.extend({keys: keys, defaults: true}, options);
+//   var res = pkgSchema(opts);
+//   console.log(res.normalize)
+//   return res;
+// };
 
-function normalize(pkg, options) {
+module.exports = function pkgSchema(options) {
+  var schema = new Schema(options);
+
+  schema.field('name', 'string', {
+      required: true,
+      normalize: function(val, key, config) {
+        if (!val && this.data.name) {
+          return this.data.name;
+        }
+        this.update('homepage', config);
+        return this.data.name;
+      }
+    })
+    .field('private', 'boolean')
+    .field('description', 'string')
+    .field('version', 'string', {
+      default: '0.1.0',
+      required: true
+    })
+    .field('homepage', 'string', { normalize: normalizers.homepage })
+    .field('author', ['object', 'string'], { normalize: utils.person })
+    .field('authors', 'array', { normalize: utils.person })
+    .field('maintainers', 'array', { normalize: utils.person })
+    .field('contributors', 'array', { normalize: utils.person })
+    .field('collaborators', 'array', { normalize: utils.person })
+
+    .field('bugs', ['object', 'string'])
+    .field('repository', ['object', 'string'], {
+      normalize: function(val, key, config, schema) {
+        if (!val && !this.data.repository) {
+          val = utils.remote.sync();
+          this.data.set('repository', val);
+        }
+        return utils.isObject(val) ? val.url : val;
+      }
+    })
+
+    .field('license', 'string', {
+      default: 'MIT'
+    })
+    .field('licenses', ['array', 'object'], {
+      validate: function(val, key, config, schema) {
+        schema.error(key, 'Field is deprecated. Define "license" as a string instead.');
+      },
+      normalize: function(val, key, config, schema) {
+        if (Array.isArray(val)) {
+          schema.update('license', val[0].type, config);
+          schema.omit(key);
+        }
+      }
+    })
+
+    .field('files', 'array', {
+      validate: validators.files
+    })
+    .field('main', 'string', {
+      validate: function(filepath) {
+        return utils.exists(filepath);
+      }
+    })
+
+    .field('engines', 'object', {
+      default: '>= 0.10.0'
+    })
+    .field('engine-strict', 'boolean')
+    .field('engineStrict', 'boolean', {
+      validate: function(val, key, config, schema) {
+        schema.error(key, 'deprecated with npm v3.0');
+      }
+    })
+
+    .field('preferGlobal', 'boolean')
+    .field('scripts', 'object')
+    .field('bin', ['object', 'string'])
+    .field('man', ['array', 'string'])
+
+    .field('dependencies', 'object')
+    .field('devDependencies', 'object')
+    .field('peerDependencies', 'object')
+    .field('optionalDependencies', 'object')
+    .field('keywords', 'array');
+
   options = options || {};
-
-  if (typeof options.schema === 'function') {
-    schema = options.schema;
+  if (options.fields) {
+    schema.visit('field', options.fields);
   }
-
-  pkg = pkg || {};
-
-  if (pkg.analyze === false) {
-    console.log('normalize-pkg: "analyze: false" is defined in package.json.');
-    return pkg;
-  }
-
-  pkg = rename(pkg, options.mapping || mapping);
-
-  var defaults = schema(options);
-  var opts = utils.merge({}, defaults, options);
-  var resolve = utils.expand(opts);
-  var keys = Object.keys(opts);
-  var diff = utils.omit(pkg, keys);
-  var fns = [];
-
-  var ctx = utils.merge({}, pkg);
-  utils.define(ctx, 'set', function (key, val) {
-    utils.set(this, key, val, options);
-    return this;
-  });
-
-  for (var key in defaults) {
-    if (!pkg.hasOwnProperty(key) && options.extend === false) {
-      continue;
-    }
-
-    var val = utils.extend({}, defaults[key], options[key]);
-    var value = pkg[key];
-
-    if (typeof val.value === 'function') {
-      var res = val.value.call(ctx, key, value, pkg);
-      if (typeof res === 'function') {
-        fns.push({name: key, fn: res});
-      } else {
-        pkg[key] = res;
-      }
-    }
-
-    if (!pkg[key]) {
-      if (pkg[key] === null) {
-        delete pkg[key];
-      } if (val.add) {
-        pkg[key] = val.value;
-      } else if (!pkg[key] && typeof val.default !== 'undefined') {
-        pkg[key] = val.default;
-      } else {
-        delete pkg[key];
-      }
-    }
-
-    if (pkg[key] && utils.typeOf(pkg[key]) !== val.type) {
-      if (val.hasOwnProperty('template')) {
-        pkg[key] = resolve(val.template, pkg);
-      } else {
-        throw new TypeError('expected ' + key + ' to be type: ' + val.type);
-      }
-    }
-  }
-
-  if (fns.length) {
-    fns.forEach(function(field) {
-      var key = field.name;
-      var fn = field.fn;
-      fn(key, pkg[key], pkg, defaults);
-    });
-  }
-
-  // sort keys
-  var res = {};
-  var len = keys.length;
-  var i = -1;
-
-  while (++i < len) {
-    var key = keys[i];
-    if (pkg.hasOwnProperty(key)) {
-      res[key] = pkg[key];
-    }
-  }
-  utils.merge(res, diff);
-  return res;
+  return schema;
 };
 
-function rename(pkg, mapping) {
-  for (var key in mapping) {
-    var val = mapping[key];
-    if (pkg.hasOwnProperty(val)) {
-      pkg[key] = pkg[val];
-      delete pkg[val];
-    }
-  }
-  return pkg;
-}
+// function verbSchema(options) {
+//   var schema = new Schema(options)
+//     .field('layout', ['object', 'string', 'null'])
+//     .field('related', ['array', 'object'])
+//     .field('reflinks', ['array', 'object'])
+//     .field('plugins', ['array', 'object'], {
+//       normalize: function(val) {
+//         if (typeof val === 'string') {
+//           return [val];
+//         }
+//         return val;
+//       }
+//     });
 
-module.exports = normalize;
-
-/**
- * Expose schema
- */
-
-module.exports.schema = schema;
+//   return schema;
+// }
+    // .field('verb', 'object', verbSchema({
+    //   keys: [
+    //     'layout',
+    //     'options',
+    //     'data',
+    //     'plugins',
+    //     'helpers',
+    //     'related',
+    //     'reflinks'
+    //   ]
+    // }))
