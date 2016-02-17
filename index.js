@@ -1,30 +1,23 @@
 'use strict';
 
-var Schema = require('reconcile');
+var Schema = require('map-schema');
 var normalizers = require('./lib/normalizers');
 var validators = require('./lib/validators');
 var utils = require('./lib/utils');
+var keys = require('./lib/keys');
 
-// module.exports = function(config, options) {
-//   var keys = Object.keys(config);
-//   var opts = utils.extend({keys: keys, defaults: true}, options);
-//   var res = pkgSchema(opts);
-//   console.log(res.normalize)
-//   return res;
-// };
+/**
+ * Normalize package.json using a schema.
+ */
 
-module.exports = function pkgSchema(options) {
-  var schema = new Schema(options);
+module.exports = function(options) {
+  var opts = utils.extend({keys: keys}, options);
+  var schema = new Schema(opts);
 
-  schema.field('name', 'string', {
-      required: true,
-      normalize: function(val, key, config) {
-        if (!val && this.data.name) {
-          return this.data.name;
-        }
-        this.update('homepage', config);
-        return this.data.name;
-      }
+  schema
+    .field('name', ['string'], {
+      normalize: normalizers.name,
+      required: true
     })
     .field('private', 'boolean')
     .field('description', 'string')
@@ -32,100 +25,90 @@ module.exports = function pkgSchema(options) {
       default: '0.1.0',
       required: true
     })
-    .field('homepage', 'string', { normalize: normalizers.homepage })
-    .field('author', ['object', 'string'], { normalize: utils.person })
-    .field('authors', 'array', { normalize: utils.person })
-    .field('maintainers', 'array', { normalize: utils.person })
-    .field('contributors', 'array', { normalize: utils.person })
-    .field('collaborators', 'array', { normalize: utils.person })
+    .field('homepage', 'string', {
+      normalize: normalizers.homepage
+    })
+
+    /**
+     * Peson fields
+     */
+
+    .field('author', ['object', 'string'], { normalize: normalizers.person })
+    .field('authors', 'array', { normalize: normalizers.person })
+    .field('maintainers', 'array', { normalize: normalizers.person })
+    .field('contributors', 'array', { normalize: normalizers.person })
+    .field('collaborators', 'array', { normalize: normalizers.person })
+
+    /**
+     * Bugs, repo and license
+     */
 
     .field('bugs', ['object', 'string'])
     .field('repository', ['object', 'string'], {
-      normalize: function(val, key, config, schema) {
-        if (!val && !this.data.repository) {
-          val = utils.remote.sync();
-          this.data.set('repository', val);
-        }
-        return utils.isObject(val) ? val.url : val;
-      }
+      normalize: normalizers.repository
     })
-
     .field('license', 'string', {
+      normalize: normalizers.license,
       default: 'MIT'
     })
     .field('licenses', ['array', 'object'], {
-      validate: function(val, key, config, schema) {
-        schema.error(key, 'Field is deprecated. Define "license" as a string instead.');
-      },
-      normalize: function(val, key, config, schema) {
-        if (Array.isArray(val)) {
-          schema.update('license', val[0].type, config);
-          schema.omit(key);
-        }
-      }
+      normalize: normalizers.licenses,
+      validate: validators.licenses
     })
 
-    .field('files', 'array', {
-      validate: validators.files
-    })
+    /**
+     * Files, main
+     */
+
+    .field('files', 'array', { validate: validators.files })
     .field('main', 'string', {
+      normalize: normalizers.main,
       validate: function(filepath) {
         return utils.exists(filepath);
       }
     })
+
+    /**
+     * Engine
+     */
 
     .field('engines', 'object', {
       default: '>= 0.10.0'
     })
     .field('engine-strict', 'boolean')
     .field('engineStrict', 'boolean', {
-      validate: function(val, key, config, schema) {
-        schema.error(key, 'deprecated with npm v3.0');
+      normalize: function(val, key, config, schema) {
+        config['engine-strict'] = val;
+        delete config[key];
+        return val;
       }
     })
 
-    .field('preferGlobal', 'boolean')
-    .field('scripts', 'object')
-    .field('bin', ['object', 'string'])
-    .field('man', ['array', 'string'])
+    /**
+     * Scripts, binaries and related
+     */
+
+    .field('bin', ['object', 'string'], { validate: validators.bin })
+    .field('preferGlobal', 'boolean', { validate: validators.preferGlobal })
+    .field('scripts', 'object', { normalize: normalizers.scripts })
+
+    /**
+     * Dependencies
+     */
 
     .field('dependencies', 'object')
     .field('devDependencies', 'object')
     .field('peerDependencies', 'object')
     .field('optionalDependencies', 'object')
-    .field('keywords', 'array');
 
-  options = options || {};
-  if (options.fields) {
-    schema.visit('field', options.fields);
-  }
+    /**
+     * Project metadata
+     */
+
+    .field('keywords', 'array', { normalize: normalizers.keywords })
+    .field('man', ['array', 'string'])
+
+  // Add fields defined on the options
+  schema.addFields(opts);
   return schema;
 };
-
-// function verbSchema(options) {
-//   var schema = new Schema(options)
-//     .field('layout', ['object', 'string', 'null'])
-//     .field('related', ['array', 'object'])
-//     .field('reflinks', ['array', 'object'])
-//     .field('plugins', ['array', 'object'], {
-//       normalize: function(val) {
-//         if (typeof val === 'string') {
-//           return [val];
-//         }
-//         return val;
-//       }
-//     });
-
-//   return schema;
-// }
-    // .field('verb', 'object', verbSchema({
-    //   keys: [
-    //     'layout',
-    //     'options',
-    //     'data',
-    //     'plugins',
-    //     'helpers',
-    //     'related',
-    //     'reflinks'
-    //   ]
-    // }))
