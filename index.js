@@ -11,17 +11,20 @@ var keys = require('./lib/keys');
  */
 
 module.exports = function(options) {
-  var opts = utils.extend({keys: keys}, options);
-  var schema = new Schema(opts);
+  var opts = utils.extend({}, options);
+  opts.keys = utils.union([], keys, opts.keys);
+  opts.omit = utils.arrayify(opts.omit);
 
-  schema
+  var schema = new Schema(opts)
     .field('name', ['string'], {
+      validate: validators.name,
       normalize: normalizers.name,
       required: true
     })
     .field('private', 'boolean')
     .field('description', 'string')
     .field('version', 'string', {
+      validate: validators.version,
       default: '0.1.0',
       required: true
     })
@@ -60,7 +63,9 @@ module.exports = function(options) {
      * Files, main
      */
 
-    .field('files', 'array', { validate: validators.files })
+    .field('files', 'array', {
+      normalize: normalizers.files
+    })
     .field('main', 'string', {
       normalize: normalizers.main,
       validate: function(filepath) {
@@ -73,15 +78,13 @@ module.exports = function(options) {
      */
 
     .field('engines', 'object', {
-      default: '>= 0.10.0'
+      default: {node: '>= 0.10.0'}
     })
-    .field('engine-strict', 'boolean')
+    .field('engine-strict', 'boolean', {
+      validate: validators['engine-strict']
+    })
     .field('engineStrict', 'boolean', {
-      normalize: function(val, key, config, schema) {
-        config['engine-strict'] = val;
-        delete config[key];
-        return val;
-      }
+      normalize: normalizers.engineStrict
     })
 
     /**
@@ -108,7 +111,7 @@ module.exports = function(options) {
     .field('keywords', 'array', { normalize: normalizers.keywords })
     .field('man', ['array', 'string'])
 
-  // Add fields defined on the options
+  // Add fields defined on `options.fields`
   schema.addFields(opts);
   return schema;
 };
