@@ -5,10 +5,12 @@ var path = require('path');
 var assert = require('assert');
 var gitty = require('gitty');
 var Normalizer = require('..');
+var del = require('delete');
 var config;
 var repo;
 
 var project = path.resolve(__dirname, 'project');
+var git = path.resolve(project, '.git');
 var cwd = process.cwd();
 
 describe('normalize', function() {
@@ -16,17 +18,22 @@ describe('normalize', function() {
     config = new Normalizer({verbose: false});
   });
 
-  before(function() {
+  before(function(cb) {
     process.chdir(project);
-    repo = gitty(project);
-    repo.initSync();
-    repo.addSync(['.']);
-    repo.commitSync('first commit');
+    del(git, function(err) {
+      if (err) return cb(err);
+
+      repo = gitty(project);
+      repo.initSync();
+      repo.addSync(['.']);
+      repo.commitSync('first commit');
+      cb();
+    });
   });
 
   after(function(cb) {
     process.chdir(cwd);
-    del(project + './git', cb);
+    del(git, cb);
   });
 
   describe('omit', function() {
