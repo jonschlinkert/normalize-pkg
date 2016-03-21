@@ -1,117 +1,55 @@
 'use strict';
 
-var Schema = require('map-schema');
-var normalizers = require('./lib/normalizers');
-var validators = require('./lib/validators');
+var Emitter = require('component-emitter');
+var schema = require('./lib/schema');
 var utils = require('./lib/utils');
-var keys = require('./lib/keys');
+
+function Normalizer(options) {
+  this.options = options || {};
+  this.schema = schema(this.options);
+  this.data = this.schema;
+  this.schema.on('warning', this.emit.bind(this, 'warning'));
+  this.schema.on('error', this.emit.bind(this, 'error'));
+}
 
 /**
- * Normalize package.json using a schema.
+ * Inherit `Emitter`
  */
 
-module.exports = function(options) {
-  var opts = utils.extend({}, options);
-  opts.keys = utils.union([], keys, opts.keys);
-  opts.omit = utils.arrayify(opts.omit);
+Emitter(Normalizer.prototype);
 
-  var schema = new Schema(opts)
-    .field('name', ['string'], {
-      validate: validators.name,
-      normalize: normalizers.name,
-      required: true
-    })
-    .field('private', 'boolean')
-    .field('description', 'string')
-    .field('version', 'string', {
-      validate: validators.version,
-      default: '0.1.0',
-      required: true
-    })
-    .field('homepage', 'string', {
-      normalize: normalizers.homepage
-    })
+/**
+ * Add a `field` to the schema.
+ *
+ * @param {Object} `field`
+ * @return {Object} Returns the instance
+ * @api public
+ */
 
-    /**
-     * Peson fields
-     */
-
-    .field('author', ['object', 'string'], { normalize: normalizers.person })
-    .field('authors', 'array', { normalize: normalizers.person })
-    .field('maintainers', 'array', { normalize: normalizers.person })
-    .field('contributors', 'array', { normalize: normalizers.person })
-    .field('collaborators', 'array', { normalize: normalizers.person })
-
-    /**
-     * Bugs, repo and license
-     */
-
-    .field('bugs', ['object', 'string'])
-    .field('repository', ['object', 'string'], {
-      normalize: normalizers.repository
-    })
-    .field('license', 'string', {
-      normalize: normalizers.license,
-      default: 'MIT'
-    })
-    .field('licenses', ['array', 'object'], {
-      normalize: normalizers.licenses,
-      validate: validators.licenses
-    })
-
-    /**
-     * Files, main
-     */
-
-    .field('files', 'array', {
-      normalize: normalizers.files
-    })
-    .field('main', 'string', {
-      normalize: normalizers.main,
-      validate: function(filepath) {
-        return utils.exists(filepath);
-      }
-    })
-
-    /**
-     * Engine
-     */
-
-    .field('engines', 'object', {
-      default: {node: '>= 0.10.0'}
-    })
-    .field('engine-strict', 'boolean', {
-      validate: validators['engine-strict']
-    })
-    .field('engineStrict', 'boolean', {
-      normalize: normalizers.engineStrict
-    })
-
-    /**
-     * Scripts, binaries and related
-     */
-
-    .field('bin', ['object', 'string'], { validate: validators.bin })
-    .field('preferGlobal', 'boolean', { validate: validators.preferGlobal })
-    .field('scripts', 'object', { normalize: normalizers.scripts })
-
-    /**
-     * Dependencies
-     */
-
-    .field('dependencies', 'object')
-    .field('devDependencies', 'object')
-    .field('peerDependencies', 'object')
-    .field('optionalDependencies', 'object')
-
-    /**
-     * Project metadata
-     */
-
-    .field('keywords', 'array', { normalize: normalizers.keywords })
-    .field('man', ['array', 'string'])
-
-  // Add fields defined on `options.fields`
-  schema.addFields(opts);
-  return schema;
+Normalizer.prototype.field = function(field) {
+  this.schema.field(...arguments);
+  return this;
 };
+
+/**
+ * Iterate over `pkg` properties and normalize values with
+ * fields on the scheman.
+ *
+ * @param {Object} `pkg` The `package.json` object to normalize
+ * @param {Object} `options`
+ * @return {Object} Returns a normalized package.json object.
+ * @api public
+ */
+
+Normalizer.prototype.normalize = function(pkg, options) {
+  if (typeof pkg === 'string') {
+    pkg = utils.requirePackage(pkg);
+  }
+  return this.schema.normalize(pkg, options);
+};
+
+/**
+ * Normalizer
+ */
+
+module.exports = Normalizer;
