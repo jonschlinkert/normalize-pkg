@@ -26,19 +26,21 @@
   "dependencies": {
     "arr-union": "^3.1.0",
     "array-unique": "^0.2.1",
+    "component-emitter": "^1.2.0",
     "export-files": "^2.1.1",
     "extend-shallow": "^2.0.1",
     "isobject": "^2.0.0",
     "lazy-cache": "^1.0.3",
-    "map-schema": "^0.1.4",
+    "map-schema": "^0.2.0",
     "minimist": "^1.2.0",
     "parse-github-url": "^0.3.0",
     "project-name": "^0.2.4",
-    "remote-origin-url": "^0.4.0",
+    "remote-origin-url": "^0.5.1",
     "semver": "^5.1.0",
     "stringify-author": "^0.1.3"
   },
   "devDependencies": {
+    "delete": "^0.3.0",
     "gitty": "^3.3.4",
     "gulp": "^3.9.1",
     "gulp-eslint": "^2.0.0",
