@@ -4,14 +4,14 @@ require('mocha');
 var path = require('path');
 var assert = require('assert');
 var gitty = require('gitty');
-var create = require('..');
+var Normalizer = require('..');
 var schema;
 var repo;
 var cwd;
 
-describe('normalize', function() {
+describe.skip('no git repository', function() {
   beforeEach(function() {
-    schema = create({verbose: false});
+    schema = new Normalizer({verbose: false});
   });
 
   before(function() {
@@ -26,13 +26,13 @@ describe('normalize', function() {
 
   describe('omit', function() {
     it('should remove a field on options.omit', function() {
-      schema = create({omit: 'version'});
+      schema = new Normalizer({omit: 'version'});
       var res = schema.normalize({});
       assert.equal(typeof res.version, 'undefined');
     });
 
     it('should remove an array of fields on options.omit', function() {
-      schema = create({omit: ['version', 'main']});
+      schema = new Normalizer({omit: ['version', 'main']});
       var res = schema.normalize({});
       assert.equal(typeof res.version, 'undefined');
       assert.equal(typeof res.main, 'undefined');
@@ -338,7 +338,7 @@ describe('normalize', function() {
 
   describe('people', function() {
     beforeEach(function() {
-      schema = create({verbose: false});
+      schema = new Normalizer({verbose: false});
     });
 
     describe('contributors', function() {
@@ -395,7 +395,7 @@ describe('normalize', function() {
 
   describe('bugs', function() {
     beforeEach(function() {
-      schema = create({verbose: false});
+      schema = new Normalizer({verbose: false});
     });
 
     it('should use the given bugs value', function() {
@@ -463,7 +463,7 @@ describe('normalize', function() {
 
   describe('license', function() {
     beforeEach(function() {
-      schema = create({verbose: false});
+      schema = new Normalizer({verbose: false});
     });
 
     it('should convert a license object to a string', function() {
@@ -482,7 +482,7 @@ describe('normalize', function() {
 
   describe('licenses', function() {
     beforeEach(function() {
-      schema = create({verbose: false});
+      schema = new Normalizer({verbose: false});
     });
 
     it('should emit a deprecation warning when licenses is defined', function(cb) {
@@ -529,7 +529,7 @@ describe('normalize', function() {
 
   describe('dependencies', function() {
     beforeEach(function() {
-      schema = create({verbose: false});
+      schema = new Normalizer({verbose: false});
     });
 
     it('should remove dependencies when empty when `omitEmpty` is true', function() {
@@ -541,7 +541,7 @@ describe('normalize', function() {
 
   describe('devDependencies', function() {
     beforeEach(function() {
-      schema = create({verbose: false});
+      schema = new Normalizer({verbose: false});
     });
 
     it('should remove empty devDependencies when omitEmpty is true', function() {
@@ -553,7 +553,7 @@ describe('normalize', function() {
 
   describe('engineStrict', function() {
     beforeEach(function() {
-      schema = create({verbose: false});
+      schema = new Normalizer({verbose: false});
     });
 
     it('should delete engineStrict and replace it with engine-strict', function() {
@@ -572,7 +572,7 @@ describe('normalize', function() {
 
   describe('engine-strict', function() {
     beforeEach(function() {
-      schema = create({verbose: false});
+      schema = new Normalizer({verbose: false});
     });
 
     it('should warn when engine-strict value is invalid', function(cb) {
@@ -593,7 +593,7 @@ describe('normalize', function() {
 
   describe('scripts', function() {
     beforeEach(function() {
-      schema = create({verbose: false});
+      schema = new Normalizer({verbose: false});
     });
 
     it('should clean up mocha scripts', function() {
@@ -617,7 +617,7 @@ describe('normalize', function() {
 
   describe('keywords', function() {
     beforeEach(function() {
-      schema = create({verbose: false});
+      schema = new Normalizer({verbose: false});
     });
 
     it('should use the name to create keywords when the array is empty', function() {
@@ -645,7 +645,7 @@ describe('normalize', function() {
 
   describe('preferGlobal', function() {
     beforeEach(function() {
-      schema = create({verbose: false});
+      schema = new Normalizer({verbose: false});
     });
 
     it('should warn when preferGlobal is defined and `bin` is not defined', function(cb) {
@@ -691,7 +691,7 @@ describe('normalize', function() {
 
   describe('bin', function() {
     beforeEach(function() {
-      schema = create({verbose: false});
+      schema = new Normalizer({verbose: false});
     });
 
     it('should not emit a warning when bin file string exists', function(cb) {
