@@ -7,7 +7,9 @@ var gitty = require('gitty');
 var Normalizer = require('..');
 var config;
 var repo;
-var cwd;
+
+var project = path.resolve(__dirname, 'project');
+var cwd = process.cwd();
 
 describe('normalize', function() {
   beforeEach(function() {
@@ -15,13 +17,16 @@ describe('normalize', function() {
   });
 
   before(function() {
-    cwd = process.cwd();
-    process.chdir(path.resolve(__dirname, 'project'));
-    repo = gitty(process.cwd());
+    process.chdir(project);
+    repo = gitty(project);
+    repo.initSync();
+    repo.addSync(['.']);
+    repo.commitSync('first commit');
   });
 
-  after(function() {
+  after(function(cb) {
     process.chdir(cwd);
+    del(project + './git', cb);
   });
 
   describe('omit', function() {
@@ -247,7 +252,7 @@ describe('normalize', function() {
       assert.equal(res.repository, 'jonschlinkert/test-project');
     });
 
-    it.only('should set `remote` on config.data', function() {
+    it('should set `remote` on config.data', function() {
       var res = config.normalize({});
       assert.equal(config.data.remote, 'https://github.com/jonschlinkert/test-project.git');
     });

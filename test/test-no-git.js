@@ -7,7 +7,9 @@ var gitty = require('gitty');
 var Normalizer = require('..');
 var schema;
 var repo;
-var cwd;
+
+var project = path.resolve(__dirname, 'project');
+var cwd = process.cwd();
 
 describe.skip('no git repository', function() {
   beforeEach(function() {
@@ -15,9 +17,7 @@ describe.skip('no git repository', function() {
   });
 
   before(function() {
-    cwd = process.cwd();
-    process.chdir(path.resolve(__dirname, 'project'));
-    repo = gitty(process.cwd());
+    process.chdir(project);
   });
 
   after(function() {
