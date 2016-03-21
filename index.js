@@ -7,7 +7,7 @@ var utils = require('./lib/utils');
 function Normalizer(options) {
   this.options = options || {};
   this.schema = schema(this.options);
-  this.data = this.schema;
+  this.data = this.schema.data;
   this.schema.on('warning', this.emit.bind(this, 'warning'));
   this.schema.on('error', this.emit.bind(this, 'error'));
 }
