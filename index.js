@@ -1,5 +1,6 @@
 'use strict';
 
+var path = require('path');
 var Emitter = require('component-emitter');
 var schema = require('./lib/schema');
 var utils = require('./lib/utils');
@@ -42,6 +43,9 @@ Normalizer.prototype.field = function(field) {
  */
 
 Normalizer.prototype.normalize = function(pkg, options) {
+  if (typeof pkg === 'undefined') {
+    pkg = path.resolve(process.cwd(), 'package.json');
+  }
   if (typeof pkg === 'string') {
     pkg = utils.requirePackage(pkg);
   }
