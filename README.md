@@ -1,6 +1,6 @@
 # normalize-pkg [![NPM version](https://img.shields.io/npm/v/normalize-pkg.svg?style=flat)](https://www.npmjs.com/package/normalize-pkg) [![NPM downloads](https://img.shields.io/npm/dm/normalize-pkg.svg?style=flat)](https://npmjs.org/package/normalize-pkg) [![Build Status](https://img.shields.io/travis/jonschlinkert/normalize-pkg.svg?style=flat)](https://travis-ci.org/jonschlinkert/normalize-pkg)
 
-> Normalize values in package.json.
+> Normalize values in package.json using the map-schema library.
 
 ## Install
 
