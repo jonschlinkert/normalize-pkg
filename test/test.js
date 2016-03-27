@@ -20,14 +20,14 @@ describe('normalize', function() {
 
   before(function(cb) {
     process.chdir(project);
-    del(git, function(err) {
-      if (err) return cb(err);
+    repo = gitty(project);
 
-      repo = gitty(project);
-      repo.initSync();
-      repo.addSync(['.']);
-      repo.commitSync('first commit');
-      cb();
+    repo.init(function(err) {
+      if (err) return cb(err);
+      repo.add(['.'], function(err) {
+        if (err) return cb(err);
+        repo.commit('first commit', cb);
+      });
     });
   });
 
@@ -341,10 +341,10 @@ describe('normalize', function() {
     it('should add a homepage from git repository', function() {
       var res = config.normalize({});
       assert(res.homepage);
-      assert.equal(res.homepage, 'https://github.com/jonschlinkert/project');
+      assert.equal(res.homepage, 'https://github.com/jonschlinkert/test-project');
     });
 
-    it('should add repository when setting hompage', function() {
+    it('should add repository when setting homepage', function() {
       var res = config.normalize({});
       assert(res.homepage);
       assert.equal(res.repository, 'jonschlinkert/test-project');

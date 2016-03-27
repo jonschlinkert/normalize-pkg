@@ -115,7 +115,7 @@ describe('normalize (no package.json)', function() {
         }
       });
 
-      config.normalize(pkg); 
+      config.normalize(pkg);
       assert.equal(count, 1);
       cb();
     });
@@ -450,7 +450,7 @@ describe('normalize (no package.json)', function() {
     it('should convert a license object to a string', function() {
       var pkg = {
         license: {
-          type: 'MIT', 
+          type: 'MIT',
           url: 'https://github.com/jonschlinkert/project-no-package/blob/master/LICENSE-MIT'
         }
       };
@@ -476,7 +476,7 @@ describe('normalize (no package.json)', function() {
         }
       });
 
-      config.normalize(pkg); 
+      config.normalize(pkg);
       assert.equal(count, 1);
       cb();
     });
@@ -685,7 +685,7 @@ describe('normalize (no package.json)', function() {
         }
       });
 
-      config.normalize(pkg); 
+      config.normalize(pkg);
       assert.equal(count, 0);
       cb();
     });
@@ -700,7 +700,7 @@ describe('normalize (no package.json)', function() {
         }
       });
 
-      config.normalize(pkg); 
+      config.normalize(pkg);
       assert.equal(count, 0);
       cb();
     });

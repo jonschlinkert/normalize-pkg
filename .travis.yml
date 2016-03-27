@@ -11,5 +11,4 @@ matrix:
   allow_failures:
     - node_js: '0.10'
 before_install:
-  - "git config --global user.name 'normalize-pkg-test'"
-  - "git config --global user.email 'travis@normalize-pkg'"
+  - "git config --global user.name 'jonschlinkert'"
