@@ -5,15 +5,15 @@ var path = require('path');
 var assert = require('assert');
 var gitty = require('gitty');
 var Normalizer = require('..');
-var schema;
+var config;
 var repo;
 
-var project = path.resolve(__dirname, 'project');
+var project = path.resolve(__dirname, 'fixtures/project-no-git');
 var cwd = process.cwd();
 
-describe.skip('no git repository', function() {
+describe('no git repository', function() {
   beforeEach(function() {
-    schema = new Normalizer({verbose: false});
+    config = new Normalizer({verbose: false});
   });
 
   before(function() {
@@ -26,46 +26,47 @@ describe.skip('no git repository', function() {
 
   describe('omit', function() {
     it('should remove a field on options.omit', function() {
-      schema = new Normalizer({omit: 'version'});
-      var res = schema.normalize({});
+      config = new Normalizer({omit: 'version'});
+      var res = config.normalize({});
       assert.equal(typeof res.version, 'undefined');
     });
 
     it('should remove an array of fields on options.omit', function() {
-      schema = new Normalizer({omit: ['version', 'main']});
-      var res = schema.normalize({});
+      config = new Normalizer({omit: ['version', 'main']});
+      var res = config.normalize({});
       assert.equal(typeof res.version, 'undefined');
       assert.equal(typeof res.main, 'undefined');
     });
   });
 
   describe('defaults', function() {
-    it('should add default properties properties', function() {
-      var res = schema.normalize({});
-      assert(res);
+    it('should add default properties to config', function() {
+      var res = config.normalize({});
+      assert.equal(res.name, 'project-no-git');
+      assert.equal(res.version, '0.1.0');
     });
   });
 
   describe('name', function() {
     it('should use the defined project name', function() {
       var pkg = { name: 'foo' };
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.name);
       assert.equal(res.name, 'foo');
     });
 
     it('should get the project name when string is empty', function() {
       var pkg = { name: '' };
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.name);
-      assert.equal(res.name, 'test-project');
+      assert.equal(res.name, 'project-no-git');
     });
 
     it('should get the project name when missing', function() {
       var pkg = {};
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.name);
-      assert.equal(res.name, 'test-project');
+      assert.equal(res.name, 'project-no-git');
     });
 
     it('should use the normalize function defined on options', function() {
@@ -81,7 +82,7 @@ describe.skip('no git repository', function() {
         }
       };
 
-      var res = schema.normalize(pkg, opts);
+      var res = config.normalize(pkg, opts);
       assert(res.name);
       assert.equal(res.name, 'bar');
     });
@@ -90,14 +91,14 @@ describe.skip('no git repository', function() {
   describe('version', function() {
     it('should use the given version', function() {
       var pkg = {version: '1.0.0'};
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.version);
       assert.equal(res.version, '1.0.0');
     });
 
     it('should use the default version', function() {
       var pkg = {version: ''};
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.version);
       assert.equal(res.version, '0.1.0');
     });
@@ -106,13 +107,13 @@ describe.skip('no git repository', function() {
       var pkg = {version: 5};
       var count = 0;
 
-      schema.on('warning', function(method, key, err) {
+      config.on('warning', function(method, key, err) {
         if (key === 'version') {
           count++;
         }
       });
 
-      schema.normalize(pkg); 
+      config.normalize(pkg); 
       assert.equal(count, 1);
       cb();
     });
@@ -120,7 +121,7 @@ describe.skip('no git repository', function() {
     it('should throw an error when version is invalid', function(cb) {
       var pkg = {version: 'foo'};
       try {
-        schema.normalize(pkg);
+        config.normalize(pkg);
         cb(new Error('expected an error'));
       } catch (err) {
         assert(/invalid semver/.test(err.message));
@@ -132,19 +133,19 @@ describe.skip('no git repository', function() {
   describe('main', function() {
     it('should remove the property if the file does not exist', function() {
       var pkg = { main: 'foo.js' };
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(!res.hasOwnProperty('main'));
     });
 
     it('should not remove the property if the file exists', function() {
       var pkg = { main: 'main.js' };
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.hasOwnProperty('main'));
     });
 
     it('should add the main file to the `files` array', function() {
       var pkg = { main: 'main.js' };
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert.equal(res.files.indexOf('main.js'), 0);
     });
 
@@ -154,7 +155,7 @@ describe.skip('no git repository', function() {
         main: 'index.js'
       };
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(!res.hasOwnProperty('files'));
     });
 
@@ -164,7 +165,7 @@ describe.skip('no git repository', function() {
         main: 'main.js'
       };
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert.equal(res.files.length, 1);
       assert.equal(res.files[0], 'main.js');
     });
@@ -174,7 +175,7 @@ describe.skip('no git repository', function() {
         main: 'main.js'
       };
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.files.length);
       assert(res.files.indexOf('main.js') !== -1);
     });
@@ -185,7 +186,7 @@ describe.skip('no git repository', function() {
         main: 'main.js'
       };
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert.equal(res.files.length, 1);
       assert(res.files.indexOf('main.js') !== -1);
     });
@@ -193,14 +194,14 @@ describe.skip('no git repository', function() {
     it('should remove main if the file does not exist', function() {
       var pkg = { main: 'foo.js' };
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(!res.main);
     });
 
     it('should do nothing if not defined', function() {
       var pkg = {};
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert.equal(typeof res.main, 'undefined');
     });
   });
@@ -208,82 +209,66 @@ describe.skip('no git repository', function() {
   describe('files', function() {
     it('should remove a file if it does not exist', function() {
       var pkg = { files: ['foo.js', 'main.js'] };
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert.equal(res.files.length, 1);
     });
 
     it('should remove the files array if it\'s empty', function() {
       var pkg = { files: [] };
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(!res.files);
     });
 
     it('should remove the files array if a file that does not exist is removed', function() {
       var pkg = { files: ['foo.js'] };
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(!res.files);
     });
   });
 
   describe('homepage', function() {
-    before(function(cb) {
-      repo.addRemote('origin', 'https://github.com/jonschlinkert/test-project.git', cb);
+    it('should add a homepage from directory name and global git config', function() {
+      var res = config.normalize({});
+      assert.equal(res.homepage, 'https://github.com/jonschlinkert/project-no-git');
     });
 
-    after(function(cb) {
-      repo.removeRemote('origin', cb);
-    });
-
-    it('should add a homepage from git repository', function() {
-      var res = schema.normalize({});
-      assert(res.homepage);
-      assert.equal(res.homepage, 'https://github.com/jonschlinkert/test-project');
-    });
-
-    it('should add repository when setting hompage', function() {
-      var res = schema.normalize({});
-      assert(res.homepage);
-      assert.equal(res.repository, 'jonschlinkert/test-project');
-    });
-
-    it('should set `remote` on schema.data', function() {
-      var res = schema.normalize({});
-      assert.equal(schema.data.remote, 'https://github.com/jonschlinkert/test-project.git');
+    it('should add repository when setting homepage', function() {
+      var res = config.normalize({});
+      assert.equal(res.repository, 'jonschlinkert/project-no-git');
     });
 
     it('should use the given homepage', function() {
       var pkg = {homepage: 'https://github.com/assemble/assemble'};
-      var res = schema.normalize(pkg);
-      assert(res.homepage);
+      var res = config.normalize(pkg);
       assert.equal(res.homepage, 'https://github.com/assemble/assemble');
     });
 
     it('should get homepage from repository.url', function() {
       var pkg = {
         homepage: '',
-        repository: 'git://github.com/jonschlinkert/test-project.git'
+        repository: 'git://github.com/jonschlinkert/project-no-git.git'
       };
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.homepage);
-      assert.equal(res.homepage, 'https://github.com/jonschlinkert/test-project');
+      assert.equal(res.homepage, 'https://github.com/jonschlinkert/project-no-git');
     });
   });
 
   describe('author', function() {
     it('should not add an empty author field', function() {
-      var res = schema.normalize({});
+      var res = config.normalize({});
       assert(!res.hasOwnProperty('author'));
     });
 
     it('should not add an empty authors field', function() {
-      var res = schema.normalize({});
+      var res = config.normalize({});
       assert(!res.hasOwnProperty('authors'));
     });
 
     it('should use the given author as a string', function() {
       var pkg = { author: 'Jon Schlinkert' };
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.author);
       assert.equal(res.author, 'Jon Schlinkert');
     });
@@ -296,7 +281,7 @@ describe.skip('no git repository', function() {
         }
       };
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.author);
       assert.equal(res.author, 'Jon Schlinkert (https://github.com/jonschlinkert)');
     });
@@ -304,7 +289,7 @@ describe.skip('no git repository', function() {
 
   describe('maintainers', function() {
     it('should not add an empty maintainers field', function() {
-      var res = schema.normalize({});
+      var res = config.normalize({});
       assert(!res.hasOwnProperty('maintainers'));
     });
   });
@@ -312,25 +297,25 @@ describe.skip('no git repository', function() {
 
   describe('license', function() {
     it('should add MIT as the default license', function() {
-      var res = schema.normalize({});
+      var res = config.normalize({});
       assert(res.hasOwnProperty('license'));
       assert.equal(res.license, 'MIT');
     });
 
     it('should return license as is if it is a string', function() {
-      var res = schema.normalize({license: 'MIT'});
+      var res = config.normalize({license: 'MIT'});
       assert(res.hasOwnProperty('license'));
       assert.equal(res.license, 'MIT');
     });
 
     it('should convert from an object to a string', function() {
-      var res = schema.normalize({license: {type: 'MIT'}});
+      var res = config.normalize({license: {type: 'MIT'}});
       assert(res.hasOwnProperty('license'));
       assert.equal(res.license, 'MIT');
     });
 
     it('should convert from an array to a string', function() {
-      var res = schema.normalize({license: [{type: 'MIT'}]});
+      var res = config.normalize({license: [{type: 'MIT'}]});
       assert(res.hasOwnProperty('license'));
       assert.equal(res.license, 'MIT');
     });
@@ -338,12 +323,12 @@ describe.skip('no git repository', function() {
 
   describe('people', function() {
     beforeEach(function() {
-      schema = new Normalizer({verbose: false});
+      config = new Normalizer({verbose: false});
     });
 
     describe('contributors', function() {
       it('should not add an empty contributors field', function() {
-        var res = schema.normalize({});
+        var res = config.normalize({});
         assert(!res.hasOwnProperty('contributors'));
       });
 
@@ -354,7 +339,7 @@ describe.skip('no git repository', function() {
             url: 'https://github.com/jonschlinkert'
           }]
         };
-        var res = schema.normalize(pkg);
+        var res = config.normalize(pkg);
         assert(res.contributors);
         var expected = 'Jon Schlinkert (https://github.com/jonschlinkert)';
         assert.equal(res.contributors[0], expected);
@@ -363,31 +348,16 @@ describe.skip('no git repository', function() {
   });
 
   describe('repository', function() {
-    before(function(cb) {
-      repo.addRemote('origin', 'https://github.com/jonschlinkert/test-project.git', cb);
-    });
-
-    after(function(cb) {
-      repo.removeRemote('origin', cb);
-    });
-
-    it('should use the given repository', function() {
+    it('should use the given repository string', function() {
       var pkg = {repository: 'jonschlinkert/foo'};
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.repository);
       assert.equal(res.repository, 'jonschlinkert/foo');
     });
 
-    it('should use the git remote origin url', function() {
-      var pkg = {repository: ''};
-      var res = schema.normalize(pkg);
-      assert(res.repository);
-      assert.equal(res.repository, 'jonschlinkert/test-project');
-    });
-
     it('should convert repository.url to a string', function() {
       var pkg = {repository: {url: 'https://github.com/jonschlinkert/foo.git'}};
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.repository);
       assert.equal(res.repository, 'jonschlinkert/foo');
     });
@@ -395,20 +365,26 @@ describe.skip('no git repository', function() {
 
   describe('bugs', function() {
     beforeEach(function() {
-      schema = new Normalizer({verbose: false});
+      config = new Normalizer({verbose: false});
+    });
+
+    it('should get the bugs url from the directory name', function() {
+      var res = config.normalize({});
+      assert(res.bugs);
+      assert.equal(res.bugs.url, 'https://github.com/jonschlinkert/project-no-git/issues');
     });
 
     it('should use the given bugs value', function() {
       var pkg = {bugs: {url: 'jonschlinkert/foo'}};
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.bugs);
       assert.equal(res.bugs.url, 'jonschlinkert/foo');
     });
 
     it('should use the value function passed on options', function() {
       var pkg = { bugs: '' };
-      var res = schema.normalize(pkg, {
+      var res = config.normalize(pkg, {
         fields: {
           bugs: {
             type: ['string', 'object'],
@@ -424,7 +400,7 @@ describe.skip('no git repository', function() {
 
     it('should use a custom type passed on options', function() {
       var pkg = {bugs: '', repository: 'https://github.com/foo'};
-      var res = schema.normalize(pkg, {
+      var res = config.normalize(pkg, {
         extend: false,
         fields: {
           bugs: {
@@ -445,7 +421,7 @@ describe.skip('no git repository', function() {
 
     it('should convert bugs.url to a string when specified', function() {
       var pkg = {bugs: {url: 'https://github.com/jonschlinkert/foo.git'}};
-      var res = schema.normalize(pkg, {
+      var res = config.normalize(pkg, {
         extend: false,
         fields: {
           bugs: {
@@ -463,18 +439,18 @@ describe.skip('no git repository', function() {
 
   describe('license', function() {
     beforeEach(function() {
-      schema = new Normalizer({verbose: false});
+      config = new Normalizer({verbose: false});
     });
 
     it('should convert a license object to a string', function() {
       var pkg = {
         license: {
           type: 'MIT', 
-          url: 'https://github.com/jonschlinkert/test-project/blob/master/LICENSE-MIT'
+          url: 'https://github.com/jonschlinkert/project-no-git/blob/master/LICENSE-MIT'
         }
       };
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert.equal(typeof res.license, 'string');
       assert.equal(res.license, 'MIT');
     });
@@ -482,20 +458,20 @@ describe.skip('no git repository', function() {
 
   describe('licenses', function() {
     beforeEach(function() {
-      schema = new Normalizer({verbose: false});
+      config = new Normalizer({verbose: false});
     });
 
     it('should emit a deprecation warning when licenses is defined', function(cb) {
       var pkg = {licenses: {type: 'MIT'}};
       var count = 0;
 
-      schema.on('warning', function(method, key, err) {
+      config.on('warning', function(method, key, err) {
         if (key === 'licenses') {
           count++;
         }
       });
 
-      schema.normalize(pkg); 
+      config.normalize(pkg); 
       assert.equal(count, 1);
       cb();
     });
@@ -503,11 +479,11 @@ describe.skip('no git repository', function() {
     it('should convert a licenses array to a license string', function() {
       var pkg = {
         licenses: [
-          {type: 'MIT', url: 'https://github.com/jonschlinkert/test-project/blob/master/LICENSE-MIT'}
+          {type: 'MIT', url: 'https://github.com/jonschlinkert/project-no-git/blob/master/LICENSE-MIT'}
         ]
       };
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(!res.licenses);
       assert(res.license);
       assert.equal(typeof res.license, 'string');
@@ -516,10 +492,10 @@ describe.skip('no git repository', function() {
 
     it('should convert from an object to a string', function() {
       var pkg = {
-        licenses: {type: 'MIT', url: 'https://github.com/jonschlinkert/test-project/blob/master/LICENSE-MIT'}
+        licenses: {type: 'MIT', url: 'https://github.com/jonschlinkert/project-no-git/blob/master/LICENSE-MIT'}
       };
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(!res.licenses);
       assert(res.license);
       assert.equal(typeof res.license, 'string');
@@ -529,63 +505,63 @@ describe.skip('no git repository', function() {
 
   describe('dependencies', function() {
     beforeEach(function() {
-      schema = new Normalizer({verbose: false});
+      config = new Normalizer({verbose: false});
     });
 
     it('should remove dependencies when empty when `omitEmpty` is true', function() {
       var pkg = {dependencies: {}};
-      var res = schema.normalize(pkg, {omitEmpty: true});
+      var res = config.normalize(pkg, {omitEmpty: true});
       assert(!res.dependencies);
     });
   });
 
   describe('devDependencies', function() {
     beforeEach(function() {
-      schema = new Normalizer({verbose: false});
+      config = new Normalizer({verbose: false});
     });
 
     it('should remove empty devDependencies when omitEmpty is true', function() {
       var pkg = {devDependencies: {}};
-      var res = schema.normalize(pkg, {omitEmpty: true});
+      var res = config.normalize(pkg, {omitEmpty: true});
       assert(!res.devDependencies);
     });
   });
 
   describe('engineStrict', function() {
     beforeEach(function() {
-      schema = new Normalizer({verbose: false});
+      config = new Normalizer({verbose: false});
     });
 
     it('should delete engineStrict and replace it with engine-strict', function() {
       var pkg = { engineStrict: true };
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert.equal(typeof res.engineStrict, 'undefined');
       assert.equal(res['engine-strict'], true);
     });
 
     it('should remove engineStrict from the object', function() {
       var pkg = { engineStrict: true };
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(!res.hasOwnProperty('engineStrict'));
     });
   });
 
   describe('engine-strict', function() {
     beforeEach(function() {
-      schema = new Normalizer({verbose: false});
+      config = new Normalizer({verbose: false});
     });
 
     it('should warn when engine-strict value is invalid', function(cb) {
       var pkg = { 'engine-strict': 'foo' };
       var count = 0;
 
-      schema.on('warning', function(method, key, err) {
+      config.on('warning', function(method, key, err) {
         if (key === 'engine-strict') {
           count++;
         }
       });
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert.equal(count, 1);
       cb();
     });
@@ -593,13 +569,13 @@ describe.skip('no git repository', function() {
 
   describe('scripts', function() {
     beforeEach(function() {
-      schema = new Normalizer({verbose: false});
+      config = new Normalizer({verbose: false});
     });
 
     it('should clean up mocha scripts', function() {
       var pkg = {scripts: {test: 'mocha -R spec'} };
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.scripts);
       assert.equal(typeof res.scripts, 'object');
       assert.equal(res.scripts.test, 'mocha');
@@ -608,7 +584,7 @@ describe.skip('no git repository', function() {
     it('should return scripts if it is an object', function() {
       var pkg = {scripts: {test: 'foo'} };
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.scripts);
       assert.equal(typeof res.scripts, 'object');
       assert.equal(res.scripts.test, 'foo');
@@ -617,20 +593,20 @@ describe.skip('no git repository', function() {
 
   describe('keywords', function() {
     beforeEach(function() {
-      schema = new Normalizer({verbose: false});
+      config = new Normalizer({verbose: false});
     });
 
     it('should use the name to create keywords when the array is empty', function() {
       var pkg = { keywords: [] };
-      var res = schema.normalize(pkg);
-      assert.equal(res.keywords[0], 'project');
-      assert.equal(res.keywords[1], 'test');
-      assert.equal(res.keywords.length, 2);
+      var res = config.normalize(pkg);
+      assert.equal(res.keywords[0], 'git');
+      assert.equal(res.keywords[1], 'no');
+      assert.equal(res.keywords.length, 3);
     });
 
     it('should sort keywords', function() {
       var pkg = { keywords: ['foo', 'bar', 'baz'] };
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert.equal(res.keywords[0], 'bar');
       assert.equal(res.keywords[1], 'baz');
       assert.equal(res.keywords[2], 'foo');
@@ -638,27 +614,27 @@ describe.skip('no git repository', function() {
 
     it('should remove duplicates', function() {
       var pkg = { keywords: ['foo', 'foo', 'foo', 'foo', 'bar', 'baz'] };
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert.equal(res.keywords.length, 3);
     });
   });
 
   describe('preferGlobal', function() {
     beforeEach(function() {
-      schema = new Normalizer({verbose: false});
+      config = new Normalizer({verbose: false});
     });
 
     it('should warn when preferGlobal is defined and `bin` is not defined', function(cb) {
       var pkg = {preferGlobal: true};
       var count = 0;
 
-      schema.on('warning', function(method, key, err) {
+      config.on('warning', function(method, key, err) {
         if (key === 'preferGlobal') {
           count++;
         }
       });
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.preferGlobal);
       assert.equal(count, 1);
       cb();
@@ -668,43 +644,43 @@ describe.skip('no git repository', function() {
       var pkg = {preferGlobal: true, bin: 'main.js'};
       var count = 0;
 
-      schema.on('warning', function(method, key, err) {
+      config.on('warning', function(method, key, err) {
         if (key === 'preferGlobal') {
           count++;
         }
       });
 
-      var res = schema.normalize(pkg);
+      var res = config.normalize(pkg);
       assert(res.preferGlobal);
       assert.equal(count, 0);
       cb();
-    });
-
-    it('should return bin as-is when it is a string', function() {
-      var pkg = {bin: 'main.js'};
-
-      var res = schema.normalize(pkg);
-      assert(res.bin);
-      assert.equal(res.bin, 'main.js');
     });
   });
 
   describe('bin', function() {
     beforeEach(function() {
-      schema = new Normalizer({verbose: false});
+      config = new Normalizer({verbose: false});
+    });
+
+    it('should return bin as-is when it is a string', function() {
+      var pkg = {bin: 'main.js'};
+
+      var res = config.normalize(pkg);
+      assert(res.bin);
+      assert.equal(res.bin, 'main.js');
     });
 
     it('should not emit a warning when bin file string exists', function(cb) {
       var pkg = {bin: 'main.js'};
       var count = 0;
 
-      schema.on('warning', function(method, key, err) {
+      config.on('warning', function(method, key, err) {
         if (key === 'bin') {
           count++;
         }
       });
 
-      schema.normalize(pkg); 
+      config.normalize(pkg); 
       assert.equal(count, 0);
       cb();
     });
@@ -713,44 +689,14 @@ describe.skip('no git repository', function() {
       var pkg = {bin: {foo: 'main.js'}};
       var count = 0;
 
-      schema.on('warning', function(method, key, err) {
+      config.on('warning', function(method, key, err) {
         if (key === 'bin') {
           count++;
         }
       });
 
-      schema.normalize(pkg); 
+      config.normalize(pkg); 
       assert.equal(count, 0);
-      cb();
-    });
-
-    it('should emit a warning when bin string points to an invalid filepath', function(cb) {
-      var pkg = {bin: 'bin/foo.js'};
-      var count = 0;
-
-      schema.on('warning', function(method, key, err) {
-        if (key === 'bin') {
-          count++;
-        }
-      });
-
-      schema.normalize(pkg); 
-      assert.equal(count, 1);
-      cb();
-    });
-
-    it('should emit a warning when bin points to an invalid filepath', function(cb) {
-      var pkg = {bin: {foo: 'bin/foo.js'}};
-      var count = 0;
-
-      schema.on('warning', function(method, key, err) {
-        if (key === 'bin') {
-          count++;
-        }
-      });
-
-      schema.normalize(pkg); 
-      assert.equal(count, 1);
       cb();
     });
   });

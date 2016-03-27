@@ -1,87 +1,32 @@
 'use strict';
 
 require('mocha');
+var fs = require('fs');
 var path = require('path');
 var assert = require('assert');
 var gitty = require('gitty');
 var Normalizer = require('..');
-var del = require('delete');
 var config;
 var repo;
 
-var project = path.resolve(__dirname, 'fixtures/project');
-var git = path.resolve(project, '.git');
+var project = path.resolve(__dirname, 'fixtures/project-no-package');
 var cwd = process.cwd();
 
-describe('normalize', function() {
+describe('normalize (no package.json)', function() {
   beforeEach(function() {
     config = new Normalizer({verbose: false});
   });
 
-  before(function(cb) {
+  before(function() {
     process.chdir(project);
-    del(git, function(err) {
-      if (err) return cb(err);
-
-      repo = gitty(project);
-      repo.initSync();
-      repo.addSync(['.']);
-      repo.commitSync('first commit');
-      cb();
-    });
+    repo = gitty(project);
   });
 
-  after(function(cb) {
+  after(function() {
     process.chdir(cwd);
-    del(git, cb);
   });
 
-  describe('Normalizer', function() {
-    it('should instantiate with an options object', function() {
-      config = new Normalizer({foo: 'bar'});
-      assert.equal(config.options.foo, 'bar');
-    });
-
-    it('should instantiate without an options object', function() {
-      config = new Normalizer();
-      assert.deepEqual(config.options, {});
-    });
-  });
-
-  describe('.field', function() {
-    it('should add a custom field', function() {
-      config = new Normalizer({omit: 'version'})
-      config.field('foo', 'string', {
-        normalize: function(val, key, config, schema) {
-          config[key] = {a: 'b'};
-          return config[key];
-        }
-      });
-
-      var res = config.normalize({});
-      assert.equal(res.foo.a, 'b');
-    });
-
-    it('should convert a function to a `normalize` function', function() {
-      config = new Normalizer({omit: 'version'})
-      config.field('foo', 'string', function(val, key, config, schema) {
-        config[key] = {a: 'b'};
-        return config[key];
-      });
-
-      var res = config.normalize({});
-      assert.equal(res.foo.a, 'b');
-    });
-
-    it('should remove an array of fields on options.omit', function() {
-      config = new Normalizer({omit: ['version', 'main']});
-      var res = config.normalize({});
-      assert.equal(typeof res.version, 'undefined');
-      assert.equal(typeof res.main, 'undefined');
-    });
-  });
-
-  describe('options.omit', function() {
+  describe('omit', function() {
     it('should remove a field on options.omit', function() {
       config = new Normalizer({omit: 'version'});
       var res = config.normalize({});
@@ -99,30 +44,8 @@ describe('normalize', function() {
   describe('defaults', function() {
     it('should add default properties to config', function() {
       var res = config.normalize({});
-      assert.equal(res.name, 'test-project');
+      assert.equal(res.name, 'project-no-package');
       assert.equal(res.version, '0.1.0');
-    });
-  });
-
-  describe('package.json', function() {
-    it('should get package.json when no args are passed', function() {
-      var res = config.normalize();
-      assert.equal(res.name, 'test-project');
-    });
-
-    it('should get package.json from a cwd', function() {
-      var res = config.normalize(process.cwd());
-      assert.equal(res.name, 'test-project');
-    });
-
-    it('should get the cwd when dir exists but path does not exist', function() {
-      var res = config.normalize(path.resolve(process.cwd(), 'index.js'));
-      assert.equal(res.name, 'test-project');
-    });
-
-    it('should get the cwd from a file path', function() {
-      var res = config.normalize(path.resolve(process.cwd(), 'main.js'));
-      assert.equal(res.name, 'test-project');
     });
   });
 
@@ -138,14 +61,14 @@ describe('normalize', function() {
       var pkg = { name: '' };
       var res = config.normalize(pkg);
       assert(res.name);
-      assert.equal(res.name, 'test-project');
+      assert.equal(res.name, 'project-no-package');
     });
 
     it('should get the project name when missing', function() {
       var pkg = {};
       var res = config.normalize(pkg);
       assert(res.name);
-      assert.equal(res.name, 'test-project');
+      assert.equal(res.name, 'project-no-package');
     });
 
     it('should use the normalize function defined on options', function() {
@@ -292,11 +215,6 @@ describe('normalize', function() {
       assert.equal(res.files.length, 1);
     });
 
-    it('should use `options.files`', function() {
-      var res = config.normalize({}, {files: ['main.js']});
-      assert.equal(res.files.length, 1);
-    });
-
     it('should remove the files array if it\'s empty', function() {
       var pkg = { files: [] };
       var res = config.normalize(pkg);
@@ -311,24 +229,16 @@ describe('normalize', function() {
   });
 
   describe('homepage', function() {
-    before(function(cb) {
-      repo.addRemote('origin', 'https://github.com/jonschlinkert/test-project.git', cb);
-    });
-
-    after(function(cb) {
-      repo.removeRemote('origin', cb);
-    });
-
     it('should add a homepage from git repository', function() {
       var res = config.normalize({});
       assert(res.homepage);
-      assert.equal(res.homepage, 'https://github.com/jonschlinkert/test-project');
+      assert.equal(res.homepage, 'https://github.com/jonschlinkert/project-no-package');
     });
 
-    it('should add repository when setting hompage', function() {
+    it('should add repository when setting homepage', function() {
       var res = config.normalize({});
       assert(res.homepage);
-      assert.equal(res.repository, 'jonschlinkert/test-project');
+      assert.equal(res.repository, 'jonschlinkert/project-no-package');
     });
 
     it('should use the given homepage', function() {
@@ -341,38 +251,24 @@ describe('normalize', function() {
     it('should get homepage from repository.url', function() {
       var pkg = {
         homepage: '',
-        repository: 'git://github.com/jonschlinkert/test-project.git'
+        repository: 'git://github.com/jonschlinkert/project-no-package.git'
       };
 
       var res = config.normalize(pkg);
       assert(res.homepage);
-      assert.equal(res.homepage, 'https://github.com/jonschlinkert/test-project');
+      assert.equal(res.homepage, 'https://github.com/jonschlinkert/project-no-package');
     });
   });
 
   describe('author', function() {
-    before(function(cb) {
-      repo.addRemote('origin', 'https://github.com/jonschlinkert/test-project.git', cb);
-    });
-
-    after(function(cb) {
-      repo.removeRemote('origin', cb);
-    });
-
     it('should not add an empty author field', function() {
       var res = config.normalize({});
       assert(!res.hasOwnProperty('author'));
     });
 
-    it('should not add an empty authors field', function() {
-      var res = config.normalize({});
-      assert(!res.hasOwnProperty('authors'));
-    });
-
-    it('should use the given author as a string', function() {
+    it('should return an author string as is', function() {
       var pkg = { author: 'Jon Schlinkert' };
       var res = config.normalize(pkg);
-      assert(res.author);
       assert.equal(res.author, 'Jon Schlinkert');
     });
 
@@ -385,7 +281,6 @@ describe('normalize', function() {
       };
 
       var res = config.normalize(pkg);
-      assert(res.author);
       assert.equal(res.author, 'Jon Schlinkert (https://github.com/jonschlinkert)');
     });
   });
@@ -396,7 +291,6 @@ describe('normalize', function() {
       assert(!res.hasOwnProperty('maintainers'));
     });
   });
-
 
   describe('license', function() {
     it('should add MIT as the default license', function() {
@@ -435,24 +329,23 @@ describe('normalize', function() {
         assert(!res.hasOwnProperty('contributors'));
       });
 
-      it('should convert contributor objects to strings', function () {
+      it('should stringify authors', function () {
         var pkg = {
           contributors: [{
             name: 'Jon Schlinkert',
             url: 'https://github.com/jonschlinkert'
           }]
         };
+
         var res = config.normalize(pkg);
-        assert(res.contributors);
-        var expected = 'Jon Schlinkert (https://github.com/jonschlinkert)';
-        assert.equal(res.contributors[0], expected);
+        assert.equal(res.contributors[0], 'Jon Schlinkert (https://github.com/jonschlinkert)');
       });
     });
   });
 
   describe('repository', function() {
     before(function(cb) {
-      repo.addRemote('origin', 'https://github.com/jonschlinkert/test-project.git', cb);
+      repo.addRemote('origin', 'https://github.com/jonschlinkert/project-no-package.git', cb);
     });
 
     after(function(cb) {
@@ -470,7 +363,7 @@ describe('normalize', function() {
       var pkg = {repository: ''};
       var res = config.normalize(pkg);
       assert(res.repository);
-      assert.equal(res.repository, 'jonschlinkert/test-project');
+      assert.equal(res.repository, 'jonschlinkert/project-no-package');
     });
 
     it('should convert repository.url to a string', function() {
@@ -558,7 +451,7 @@ describe('normalize', function() {
       var pkg = {
         license: {
           type: 'MIT', 
-          url: 'https://github.com/jonschlinkert/test-project/blob/master/LICENSE-MIT'
+          url: 'https://github.com/jonschlinkert/project-no-package/blob/master/LICENSE-MIT'
         }
       };
 
@@ -591,7 +484,7 @@ describe('normalize', function() {
     it('should convert a licenses array to a license string', function() {
       var pkg = {
         licenses: [
-          {type: 'MIT', url: 'https://github.com/jonschlinkert/test-project/blob/master/LICENSE-MIT'}
+          {type: 'MIT', url: 'https://github.com/jonschlinkert/project-no-package/blob/master/LICENSE-MIT'}
         ]
       };
 
@@ -604,7 +497,7 @@ describe('normalize', function() {
 
     it('should convert from an object to a string', function() {
       var pkg = {
-        licenses: {type: 'MIT', url: 'https://github.com/jonschlinkert/test-project/blob/master/LICENSE-MIT'}
+        licenses: {type: 'MIT', url: 'https://github.com/jonschlinkert/project-no-package/blob/master/LICENSE-MIT'}
       };
 
       var res = config.normalize(pkg);
@@ -711,9 +604,9 @@ describe('normalize', function() {
     it('should use the name to create keywords when the array is empty', function() {
       var pkg = { keywords: [] };
       var res = config.normalize(pkg);
-      assert.equal(res.keywords[0], 'project');
-      assert.equal(res.keywords[1], 'test');
-      assert.equal(res.keywords.length, 2);
+      assert.equal(res.keywords[0], 'no');
+      assert.equal(res.keywords[1], 'package');
+      assert.equal(res.keywords.length, 3);
     });
 
     it('should sort keywords', function() {
@@ -771,7 +664,7 @@ describe('normalize', function() {
     it('should return bin as-is when it is a string', function() {
       var pkg = {bin: 'main.js'};
 
-      var res = config.normalize(pkg, {bin: false});
+      var res = config.normalize(pkg);
       assert(res.bin);
       assert.equal(res.bin, 'main.js');
     });

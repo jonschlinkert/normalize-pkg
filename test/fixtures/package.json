@@ -1,18 +1,18 @@
 {
-  "name": "normalize-pkg",
+  "name": "expand-pkg",
   "private": true,
   "description": "Normalize values in package.json to improve compatibility, programmatic readability and usefulness with third party libs.",
   "version": "0.2.5",
-  "homepage": "https://github.com/jonschlinkert/normalize-pkg/",
+  "homepage": "https://github.com/jonschlinkert/expand-pkg/",
   "author": {
     "name": "Jon Schlinkert",
     "url": "https://github.com/jonschlinkert"
   },
   "repository": {
-    "url": "https://github.com/jonschlinkert/normalize-pkg.git"
+    "url": "https://github.com/jonschlinkert/expand-pkg.git"
   },
   "bugs": {
-    "url": "https://github.com/jonschlinkert/normalize-pkg/issues"
+    "url": "https://github.com/jonschlinkert/expand-pkg/issues"
   },
   "license": "MIT",
   "files": [

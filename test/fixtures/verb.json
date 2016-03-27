@@ -1,5 +1,5 @@
 {
-  "name": "normalize-pkg",
+  "name": "expand-pkg",
   "private": true,
   "keywords": [
     "package-json",

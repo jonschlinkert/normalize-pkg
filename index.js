@@ -27,8 +27,11 @@ Emitter(Normalizer.prototype);
  * @api public
  */
 
-Normalizer.prototype.field = function(field) {
-  this.schema.field(...arguments);
+Normalizer.prototype.field = function(field, type, config) {
+  if (typeof config === 'function') {
+    config = { normalize: config };
+  }
+  this.schema.field(field, type, config);
   return this;
 };
 
@@ -49,6 +52,7 @@ Normalizer.prototype.normalize = function(pkg, options) {
   if (typeof pkg === 'string') {
     pkg = utils.requirePackage(pkg);
   }
+  this.schema.options = utils.merge({}, this.schema.options, options);
   return this.schema.normalize(pkg, options);
 };
 
