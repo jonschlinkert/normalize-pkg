@@ -84,7 +84,8 @@
     },
     "reflinks": [
       "map-schema",
-      "verb"
+      "verb",
+      "project-name"
     ],
     "lint": {
       "reflinks": true
