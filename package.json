@@ -12,7 +12,7 @@
   "files": [
     "cli.js",
     "index.js",
-    "lib/"
+    "lib"
   ],
   "main": "index.js",
   "bin": {

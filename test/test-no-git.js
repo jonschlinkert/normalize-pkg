@@ -273,7 +273,7 @@ describe('no git repository', function() {
       assert.equal(res.author, 'Jon Schlinkert');
     });
 
-    it('should convert an author object to a string', function () {
+    it('should convert an author object to a string', function() {
       var pkg = {
         author: {
           name: 'Jon Schlinkert',
@@ -293,7 +293,6 @@ describe('no git repository', function() {
       assert(!res.hasOwnProperty('maintainers'));
     });
   });
-
 
   describe('license', function() {
     it('should add MIT as the default license', function() {
@@ -332,7 +331,7 @@ describe('no git repository', function() {
         assert(!res.hasOwnProperty('contributors'));
       });
 
-      it('should convert contributor objects to strings', function () {
+      it('should convert contributor objects to strings', function() {
         var pkg = {
           contributors: [{
             name: 'Jon Schlinkert',

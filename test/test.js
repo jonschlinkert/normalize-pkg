@@ -312,17 +312,17 @@ describe('normalize', function() {
 
   describe('homepage', function() {
     before(function(cb) {
-      repo.addRemote('origin', 'https://github.com/jonschlinkert/test-project.git', cb);
+      repo.addRemote('foo', 'https://github.com/jonschlinkert/test-project.git', cb);
     });
 
     after(function(cb) {
-      repo.removeRemote('origin', cb);
+      repo.removeRemote('foo', cb);
     });
 
     it('should add a homepage from git repository', function() {
       var res = config.normalize({});
       assert(res.homepage);
-      assert.equal(res.homepage, 'https://github.com/jonschlinkert/test-project');
+      assert.equal(res.homepage, 'https://github.com/jonschlinkert/project');
     });
 
     it('should add repository when setting hompage', function() {
@@ -352,11 +352,11 @@ describe('normalize', function() {
 
   describe('author', function() {
     before(function(cb) {
-      repo.addRemote('origin', 'https://github.com/jonschlinkert/test-project.git', cb);
+      repo.addRemote('foo', 'https://github.com/jonschlinkert/test-project.git', cb);
     });
 
     after(function(cb) {
-      repo.removeRemote('origin', cb);
+      repo.removeRemote('foo', cb);
     });
 
     it('should not add an empty author field', function() {
@@ -376,7 +376,7 @@ describe('normalize', function() {
       assert.equal(res.author, 'Jon Schlinkert');
     });
 
-    it('should convert an author object to a string', function () {
+    it('should convert an author object to a string', function() {
       var pkg = {
         author: {
           name: 'Jon Schlinkert',
@@ -396,7 +396,6 @@ describe('normalize', function() {
       assert(!res.hasOwnProperty('maintainers'));
     });
   });
-
 
   describe('license', function() {
     it('should add MIT as the default license', function() {
@@ -435,7 +434,7 @@ describe('normalize', function() {
         assert(!res.hasOwnProperty('contributors'));
       });
 
-      it('should convert contributor objects to strings', function () {
+      it('should convert contributor objects to strings', function() {
         var pkg = {
           contributors: [{
             name: 'Jon Schlinkert',
@@ -452,11 +451,11 @@ describe('normalize', function() {
 
   describe('repository', function() {
     before(function(cb) {
-      repo.addRemote('origin', 'https://github.com/jonschlinkert/test-project.git', cb);
+      repo.addRemote('foo', 'https://github.com/jonschlinkert/test-project.git', cb);
     });
 
     after(function(cb) {
-      repo.removeRemote('origin', cb);
+      repo.removeRemote('foo', cb);
     });
 
     it('should use the given repository', function() {
@@ -466,7 +465,7 @@ describe('normalize', function() {
       assert.equal(res.repository, 'jonschlinkert/foo');
     });
 
-    it('should use the git remote origin url', function() {
+    it('should use the git remote url', function() {
       var pkg = {repository: ''};
       var res = config.normalize(pkg);
       assert(res.repository);

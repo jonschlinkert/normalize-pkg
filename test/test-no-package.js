@@ -272,7 +272,7 @@ describe('normalize (no package.json)', function() {
       assert.equal(res.author, 'Jon Schlinkert');
     });
 
-    it('should convert an author object to a string', function () {
+    it('should convert an author object to a string', function() {
       var pkg = {
         author: {
           name: 'Jon Schlinkert',
@@ -329,7 +329,7 @@ describe('normalize (no package.json)', function() {
         assert(!res.hasOwnProperty('contributors'));
       });
 
-      it('should stringify authors', function () {
+      it('should stringify authors', function() {
         var pkg = {
           contributors: [{
             name: 'Jon Schlinkert',
@@ -345,11 +345,11 @@ describe('normalize (no package.json)', function() {
 
   describe('repository', function() {
     before(function(cb) {
-      repo.addRemote('origin', 'https://github.com/jonschlinkert/project-no-package.git', cb);
+      repo.addRemote('foo', 'https://github.com/jonschlinkert/project-no-package.git', cb);
     });
 
     after(function(cb) {
-      repo.removeRemote('origin', cb);
+      repo.removeRemote('foo', cb);
     });
 
     it('should use the given repository', function() {
@@ -359,7 +359,7 @@ describe('normalize (no package.json)', function() {
       assert.equal(res.repository, 'jonschlinkert/foo');
     });
 
-    it('should use the git remote origin url', function() {
+    it('should use the git remote url', function() {
       var pkg = {repository: ''};
       var res = config.normalize(pkg);
       assert(res.repository);
