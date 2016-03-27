@@ -5,7 +5,29 @@ var Emitter = require('component-emitter');
 var schema = require('./lib/schema');
 var utils = require('./lib/utils');
 
-function Normalizer(options) {
+/**
+ * Create an instance of `NormalizePkg` with the given `options`.
+ *
+ * ```js
+ * var config = new NormalizePkg();
+ * var pkg = config.normalize({
+ *   author: {
+ *     name: 'Jon Schlinkert',
+ *     url: 'https://github.com/jonschlinkert'
+ *   }
+ * });
+ * console.log(pkg);
+ * //=> {author: 'Jon Schlinkert (https://github.com/jonschlinkert)'}
+ * ```
+ * @param {Object} `options`
+ * @api public
+ */
+
+function NormalizePkg(options) {
+  if (!(this instanceof NormalizePkg)) {
+    return new NormalizePkg(options);
+  }
+
   this.options = options || {};
   this.schema = schema(this.options);
   this.data = this.schema.data;
@@ -17,35 +39,61 @@ function Normalizer(options) {
  * Inherit `Emitter`
  */
 
-Emitter(Normalizer.prototype);
+Emitter(NormalizePkg.prototype);
 
 /**
- * Add a `field` to the schema.
+ * Add a field to the schema, or overwrite or extend an existing field. The last
+ * argument is an `options` object that supports the following properties:
  *
- * @param {Object} `field`
+ * - `normalize` **{Function}**: function to be called on the value when the `.normalize` method is called
+ * - `default` **{any}**: default value to be used when the package.json property is undefined.
+ * - `required` **{Boolean}**: define `true` if the property is required
+ *
+ * ```js
+ * var config = new NormalizePkg();
+ *
+ * config.field('foo', 'string', {
+ *   default: 'bar'
+ * });
+ *
+ * var pkg = config.normalize({});
+ * console.log(pkg);
+ * //=> {foo:  'bar'}
+ * ```
+ *
+ * @param {String} `name` Field name (required)
+ * @param {String|Array} `type` One or more native javascript types allowed for the property value (required)
+ * @param {Object} `options`
  * @return {Object} Returns the instance
  * @api public
  */
 
-Normalizer.prototype.field = function(field, type, config) {
-  if (typeof config === 'function') {
-    config = { normalize: config };
+NormalizePkg.prototype.field = function(field, type, options) {
+  if (typeof options === 'function') {
+    options = { normalize: options };
   }
-  this.schema.field(field, type, config);
+  if (options.extend === true) {
+    options = utils.merge({}, this.schema.get(field), options);
+  }
+  this.schema.field(field, type, options);
   return this;
 };
 
 /**
- * Iterate over `pkg` properties and normalize values with
- * fields on the scheman.
+ * Iterate over `pkg` properties and normalize values that have corresponding
+ * [fields](#field) registered on the schema.
  *
+ * ```js
+ * var config = new NormalizePkg();
+ * var pkg = config.normalize(require('./package.json'));
+ * ```
  * @param {Object} `pkg` The `package.json` object to normalize
  * @param {Object} `options`
  * @return {Object} Returns a normalized package.json object.
  * @api public
  */
 
-Normalizer.prototype.normalize = function(pkg, options) {
+NormalizePkg.prototype.normalize = function(pkg, options) {
   if (typeof pkg === 'undefined') {
     pkg = path.resolve(process.cwd(), 'package.json');
   }
@@ -57,7 +105,7 @@ Normalizer.prototype.normalize = function(pkg, options) {
 };
 
 /**
- * Normalizer
+ * NormalizePkg
  */
 
-module.exports = Normalizer;
+module.exports = NormalizePkg;

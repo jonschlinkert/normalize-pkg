@@ -79,6 +79,25 @@ describe('normalize', function() {
       assert.equal(typeof res.version, 'undefined');
       assert.equal(typeof res.main, 'undefined');
     });
+
+    it('should extend an existing field', function() {
+      config = new Normalizer({knownOnly: true});
+      config.schema.fields = {};
+
+      config.field('foo', 'string', {
+        normalize: function(val) {
+          return val + ':bar';
+        }
+      });
+
+      config.field('foo', 'string', {
+        extend: true,
+        default: 'foo',
+      });
+
+      var res = config.normalize({});
+      assert.equal(res.foo, 'foo:bar');
+    });
   });
 
   describe('options.omit', function() {
@@ -192,7 +211,7 @@ describe('normalize', function() {
         }
       });
 
-      config.normalize(pkg); 
+      config.normalize(pkg);
       assert.equal(count, 1);
       cb();
     });
@@ -556,7 +575,7 @@ describe('normalize', function() {
     it('should convert a license object to a string', function() {
       var pkg = {
         license: {
-          type: 'MIT', 
+          type: 'MIT',
           url: 'https://github.com/jonschlinkert/test-project/blob/master/LICENSE-MIT'
         }
       };
@@ -582,7 +601,7 @@ describe('normalize', function() {
         }
       });
 
-      config.normalize(pkg); 
+      config.normalize(pkg);
       assert.equal(count, 1);
       cb();
     });
@@ -791,7 +810,7 @@ describe('normalize', function() {
         }
       });
 
-      config.normalize(pkg); 
+      config.normalize(pkg);
       assert.equal(count, 0);
       cb();
     });
@@ -806,7 +825,7 @@ describe('normalize', function() {
         }
       });
 
-      config.normalize(pkg); 
+      config.normalize(pkg);
       assert.equal(count, 0);
       cb();
     });
