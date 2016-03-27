@@ -77,9 +77,7 @@ Since an empty object was passed, `normalize-pkg` was smart enough to fill in mi
 
 ### options.pick
 
-**Type**
-
-: `array`
+**Type**: `array`
 
 **Default**: `undefined`
 
@@ -87,9 +85,7 @@ Filter the resulting object to contain only the specified keys.
 
 ### options.omit
 
-**Type**
-
-: `array`
+**Type**: `array`
 
 **Default**: `undefined`
 
