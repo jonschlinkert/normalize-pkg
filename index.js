@@ -33,6 +33,11 @@ function NormalizePkg(options) {
   this.data = this.schema.data;
   this.schema.on('warning', this.emit.bind(this, 'warning'));
   this.schema.on('error', this.emit.bind(this, 'error'));
+
+  this.schema.union = function(key, config, arr) {
+    config[key] = utils.arrayify(config[key]);
+    config[key] = utils.union([], config[key], utils.arrayify(arr));
+  };
 }
 
 /**
