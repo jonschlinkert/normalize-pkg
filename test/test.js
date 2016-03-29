@@ -509,10 +509,17 @@ describe('normalize', function() {
       config = new Normalizer({verbose: false});
     });
 
-    it('should use the given bugs value', function() {
+    it('should fix the bugs value based on repo information', function() {
       var pkg = {bugs: {url: 'jonschlinkert/foo'}};
 
       var res = config.normalize(pkg);
+      assert(res.bugs);
+      assert.equal(res.bugs.url, 'https://github.com/jonschlinkert/test-project/issues');
+    });
+
+    it('should use the given bugs value', function() {
+      var opts = {bugs: {url: 'jonschlinkert/foo'}};
+      var res = config.normalize({}, opts);
       assert(res.bugs);
       assert.equal(res.bugs.url, 'jonschlinkert/foo');
     });
