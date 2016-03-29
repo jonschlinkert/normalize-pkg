@@ -37,6 +37,11 @@ describe('normalize', function() {
   });
 
   describe('Normalizer', function() {
+    it('should instantiate without new', function() {
+      config = Normalizer({foo: 'bar'});
+      assert.equal(config.options.foo, 'bar');
+    });
+
     it('should instantiate with an options object', function() {
       config = new Normalizer({foo: 'bar'});
       assert.equal(config.options.foo, 'bar');
@@ -529,15 +534,16 @@ describe('normalize', function() {
     });
 
     it('should use a custom type passed on options', function() {
-      var pkg = {bugs: '', repository: 'https://github.com/foo'};
+      var pkg = {bugs: '', owner: 'foo'};
       var res = config.normalize(pkg, {
         extend: false,
         fields: {
           bugs: {
             type: ['object', 'string'],
-            normalize: function custom(key, val, config) {
+            normalize: function custom(key, val, config, schema) {
+              schema.update('repository', config);
               var bugs = {};
-              bugs.url = config.repository + '/bugs'
+              bugs.url = config.homepage + '/bugs'
               return bugs;
             }
           }
@@ -546,7 +552,30 @@ describe('normalize', function() {
 
       assert.equal(typeof res.bugs, 'object');
       assert(res.bugs.url);
-      assert.equal(res.bugs.url, 'https://github.com/foo/bugs');
+      assert.equal(res.bugs.url, 'https://github.com/foo/test-project/bugs');
+    });
+
+    it('should use owner passed on options', function() {
+      var pkg = {bugs: ''};
+      var res = config.normalize(pkg, {
+        owner: 'foo',
+        extend: false,
+        fields: {
+          bugs: {
+            type: ['object', 'string'],
+            normalize: function custom(key, val, config, schema) {
+              schema.update('repository', config);
+              var bugs = {};
+              bugs.url = config.homepage + '/bugs'
+              return bugs;
+            }
+          }
+        }
+      });
+
+      assert.equal(typeof res.bugs, 'object');
+      assert(res.bugs.url);
+      assert.equal(res.bugs.url, 'https://github.com/foo/test-project/bugs');
     });
 
     it('should convert bugs.url to a string when specified', function() {
@@ -792,6 +821,14 @@ describe('normalize', function() {
       var res = config.normalize(pkg, {bin: false});
       assert(res.bin);
       assert.equal(res.bin, 'main.js');
+    });
+
+    it('should add bin file to `files`', function() {
+      var pkg = {bin: 'main.js'};
+
+      var res = config.normalize(pkg, {bin: false});
+      assert(res.files);
+      assert.equal(res.files[0], 'main.js');
     });
   });
 

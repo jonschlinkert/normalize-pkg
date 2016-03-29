@@ -404,13 +404,14 @@ describe('normalize (no package.json)', function() {
     });
 
     it('should use a custom type passed on options', function() {
-      var pkg = {bugs: '', repository: 'https://github.com/foo'};
+      var pkg = { bugs: '', repository: 'https://github.com/foo' };
       var res = config.normalize(pkg, {
         extend: false,
         fields: {
           bugs: {
             type: ['object', 'string'],
-            normalize: function custom(key, val, config) {
+            normalize: function custom(key, val, config, schema) {
+              schema.update('repository', config);
               var bugs = {};
               bugs.url = config.repository + '/bugs'
               return bugs;

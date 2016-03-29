@@ -165,7 +165,7 @@ describe('normalize (bin)', function() {
         }
       });
 
-      config.normalize(pkg); 
+      config.normalize(pkg);
       assert.equal(count, 0);
       cb();
     });
@@ -180,7 +180,7 @@ describe('normalize (bin)', function() {
         }
       });
 
-      config.normalize(pkg); 
+      config.normalize(pkg);
       assert.equal(count, 0);
       cb();
     });

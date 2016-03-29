@@ -398,7 +398,7 @@ describe('no git repository', function() {
     });
 
     it('should use a custom type passed on options', function() {
-      var pkg = {bugs: '', repository: 'https://github.com/foo'};
+      var pkg = {bugs: '', repository: 'https://github.com/foo/bar'};
       var res = config.normalize(pkg, {
         extend: false,
         fields: {
@@ -406,7 +406,7 @@ describe('no git repository', function() {
             type: ['object', 'string'],
             normalize: function custom(key, val, config) {
               var bugs = {};
-              bugs.url = config.repository + '/bugs'
+              bugs.url = config.homepage + '/bugs'
               return bugs;
             }
           }
@@ -415,7 +415,7 @@ describe('no git repository', function() {
 
       assert.equal(typeof res.bugs, 'object');
       assert(res.bugs.url);
-      assert.equal(res.bugs.url, 'https://github.com/foo/bugs');
+      assert.equal(res.bugs.url, 'https://github.com/foo/bar/bugs');
     });
 
     it('should convert bugs.url to a string when specified', function() {
