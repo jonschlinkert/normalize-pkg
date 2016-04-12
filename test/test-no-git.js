@@ -378,14 +378,14 @@ describe('no git repository', function() {
 
       var res = config.normalize(pkg);
       assert(res.bugs);
-      assert.equal(res.bugs.url, 'https://github.com/jonschlinkert/project-no-git/issues');
+      assert.equal(res.bugs.url, 'https://github.com/jonschlinkert/foo/issues');
     });
 
     it('should use the given bugs value', function() {
       var opts = {bugs: {url: 'jonschlinkert/foo'}};
       var res = config.normalize({}, opts);
       assert(res.bugs);
-      assert.equal(res.bugs.url, 'jonschlinkert/foo');
+      assert.equal(res.bugs.url, 'https://github.com/jonschlinkert/foo/issues');
     });
 
     it('should use the value function passed on options', function() {
