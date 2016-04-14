@@ -77,6 +77,7 @@ NormalizePkg.prototype.field = function(field, type, options) {
   if (typeof options === 'function') {
     options = { normalize: options };
   }
+  options = options || {};
   if (options.extend === true) {
     options = utils.merge({}, this.schema.get(field), options);
   }
