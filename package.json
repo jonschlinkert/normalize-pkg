@@ -12,7 +12,9 @@
   "files": [
     "cli.js",
     "index.js",
-    "lib"
+    "lib",
+    "LICENSE",
+    "README.md"
   ],
   "main": "index.js",
   "bin": {
@@ -29,6 +31,7 @@
     "array-unique": "^0.2.1",
     "component-emitter": "^1.2.1",
     "export-files": "^2.1.1",
+    "fs-exists-sync": "^0.1.0",
     "kind-of": "^3.0.3",
     "lazy-cache": "^2.0.1",
     "map-schema": "^0.2.3",
@@ -43,15 +46,15 @@
     "write-json": "^0.2.2"
   },
   "devDependencies": {
-    "delete": "^0.3.0",
-    "gitty": "^3.3.4",
+    "delete": "^0.3.2",
+    "gitty": "^3.3.6",
     "gulp": "^3.9.1",
-    "gulp-eslint": "^2.0.0",
-    "gulp-format-md": "^0.1.7",
-    "gulp-istanbul": "^0.10.3",
+    "gulp-eslint": "^3.0.1",
+    "gulp-format-md": "^0.1.9",
+    "gulp-istanbul": "^1.0.0",
     "gulp-mocha": "^2.2.0",
     "gulp-unused": "^0.1.2",
-    "mocha": "^2.4.5"
+    "mocha": "^2.5.3"
   },
   "keywords": [
     "config",
