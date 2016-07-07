@@ -227,7 +227,7 @@ describe('no git repository', function() {
   });
 
   describe('homepage', function() {
-    it('should add a homepage from directory name and global git config', function() {
+    it('should add a homepage from directory name and user from global git config', function() {
       var res = config.normalize({});
       assert.equal(res.homepage, 'https://github.com/jonschlinkert/project-no-git');
     });
