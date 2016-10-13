@@ -1,7 +1,6 @@
 'use strict';
 
 require('mocha');
-var fs = require('fs');
 var path = require('path');
 var assert = require('assert');
 var gitty = require('gitty');
@@ -9,8 +8,8 @@ var Normalizer = require('..');
 var config;
 var repo;
 
+var origCwd = process.cwd();
 var project = path.resolve(__dirname, 'fixtures/project-no-package');
-var cwd = process.cwd();
 
 describe('normalize (no package.json)', function() {
   beforeEach(function() {
@@ -23,7 +22,7 @@ describe('normalize (no package.json)', function() {
   });
 
   after(function() {
-    process.chdir(cwd);
+    process.chdir(origCwd);
   });
 
   describe('omit', function() {
@@ -74,11 +73,11 @@ describe('normalize (no package.json)', function() {
     it('should use the normalize function defined on options', function() {
       var pkg = { name: 'foo' };
       var opts = {
-        extend: true,
         fields: {
           name: {
+            type: ['string'],
             normalize: function custom() {
-              return 'bar'
+              return 'bar';
             }
           }
         }
@@ -345,11 +344,11 @@ describe('normalize (no package.json)', function() {
 
   describe('repository', function() {
     before(function(cb) {
-      repo.addRemote('foo', 'https://github.com/jonschlinkert/project-no-package.git', cb);
+      repo.addRemote('origin', 'https://github.com/jonschlinkert/project-no-package.git', cb);
     });
 
     after(function(cb) {
-      repo.removeRemote('foo', cb);
+      repo.removeRemote('origin', cb);
     });
 
     it('should use the given repository', function() {
@@ -401,7 +400,7 @@ describe('normalize (no package.json)', function() {
           bugs: {
             type: ['string', 'object'],
             normalize: function custom() {
-              return { url: 'abc' }
+              return { url: 'abc' };
             }
           }
         }
@@ -420,7 +419,7 @@ describe('normalize (no package.json)', function() {
             normalize: function custom(key, val, config, schema) {
               schema.update('repository', config);
               var bugs = {};
-              bugs.url = config.repository + '/bugs'
+              bugs.url = config.repository + '/bugs';
               return bugs;
             }
           }
@@ -574,7 +573,7 @@ describe('normalize (no package.json)', function() {
         }
       });
 
-      var res = config.normalize(pkg);
+      config.normalize(pkg);
       assert.equal(count, 1);
       cb();
     });

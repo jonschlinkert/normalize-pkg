@@ -3,25 +3,23 @@
 require('mocha');
 var path = require('path');
 var assert = require('assert');
-var gitty = require('gitty');
 var Normalizer = require('..');
 var config;
-var repo;
 
+var origCwd = process.cwd();
 var project = path.resolve(__dirname, 'fixtures/project-no-git');
-var cwd = process.cwd();
 
 describe('no git repository', function() {
   beforeEach(function() {
     config = new Normalizer({verbose: false});
   });
 
-  before(function() {
+  beforeEach(function() {
     process.chdir(project);
   });
 
-  after(function() {
-    process.chdir(cwd);
+  afterEach(function() {
+    process.chdir(origCwd);
   });
 
   describe('omit', function() {
@@ -72,11 +70,11 @@ describe('no git repository', function() {
     it('should use the normalize function defined on options', function() {
       var pkg = { name: 'foo' };
       var opts = {
-        extend: true,
         fields: {
           name: {
+            type: ['string'],
             normalize: function custom() {
-              return 'bar'
+              return 'bar';
             }
           }
         }
@@ -226,7 +224,7 @@ describe('no git repository', function() {
     });
   });
 
-  describe('homepage', function() {
+  describe.only('homepage', function() {
     it('should add a homepage from directory name and user from global git config', function() {
       var res = config.normalize({});
       assert.equal(res.homepage, 'https://github.com/jonschlinkert/project-no-git');
@@ -395,7 +393,7 @@ describe('no git repository', function() {
           bugs: {
             type: ['string', 'object'],
             normalize: function custom() {
-              return { url: 'abc' }
+              return { url: 'abc' };
             }
           }
         }
@@ -413,7 +411,7 @@ describe('no git repository', function() {
             type: ['object', 'string'],
             normalize: function custom(key, val, config) {
               var bugs = {};
-              bugs.url = config.homepage + '/bugs'
+              bugs.url = config.homepage + '/bugs';
               return bugs;
             }
           }
@@ -567,7 +565,7 @@ describe('no git repository', function() {
         }
       });
 
-      var res = config.normalize(pkg);
+      config.normalize(pkg);
       assert.equal(count, 1);
       cb();
     });

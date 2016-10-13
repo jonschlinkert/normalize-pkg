@@ -3,15 +3,15 @@
 require('mocha');
 var path = require('path');
 var assert = require('assert');
-var gitty = require('gitty');
 var Normalizer = require('..');
+var createRepo = require('./support/git');
 var del = require('delete');
 var config;
-var repo;
 
+var origCwd = process.cwd();
+var remote = 'https://github.com/jonschlinkert/test-project.git';
 var project = path.resolve(__dirname, 'fixtures/project');
 var git = path.resolve(project, '.git');
-var cwd = process.cwd();
 
 describe('normalize', function() {
   beforeEach(function() {
@@ -20,19 +20,11 @@ describe('normalize', function() {
 
   before(function(cb) {
     process.chdir(project);
-    repo = gitty(project);
-
-    repo.init(function(err) {
-      if (err) return cb(err);
-      repo.add(['.'], function(err) {
-        if (err) return cb(err);
-        repo.commit('first commit', cb);
-      });
-    });
+    createRepo(project, remote, cb);
   });
 
   after(function(cb) {
-    process.chdir(cwd);
+    process.chdir(origCwd);
     del(git, cb);
   });
 
@@ -55,7 +47,7 @@ describe('normalize', function() {
 
   describe('.field', function() {
     it('should add a custom field', function() {
-      config = new Normalizer({omit: 'version'})
+      config = new Normalizer({omit: 'version'});
       config.field('foo', 'string', {
         normalize: function(val, key, config, schema) {
           config[key] = {a: 'b'};
@@ -68,7 +60,7 @@ describe('normalize', function() {
     });
 
     it('should convert a function to a `normalize` function', function() {
-      config = new Normalizer({omit: 'version'})
+      config = new Normalizer({omit: 'version'});
       config.field('foo', 'string', function(val, key, config, schema) {
         config[key] = {a: 'b'};
         return config[key];
@@ -97,7 +89,7 @@ describe('normalize', function() {
 
       config.field('foo', 'string', {
         extend: true,
-        default: 'foo',
+        default: 'foo'
       });
 
       var res = config.normalize({});
@@ -175,11 +167,11 @@ describe('normalize', function() {
     it('should use the normalize function defined on options', function() {
       var pkg = { name: 'foo' };
       var opts = {
-        extend: true,
         fields: {
           name: {
+            type: ['string'],
             normalize: function custom() {
-              return 'bar'
+              return 'bar';
             }
           }
         }
@@ -335,14 +327,6 @@ describe('normalize', function() {
   });
 
   describe('homepage', function() {
-    before(function(cb) {
-      repo.addRemote('foo', 'https://github.com/jonschlinkert/test-project.git', cb);
-    });
-
-    after(function(cb) {
-      repo.removeRemote('foo', cb);
-    });
-
     it('should add a homepage from git repository', function() {
       var res = config.normalize({});
       assert(res.homepage);
@@ -375,14 +359,6 @@ describe('normalize', function() {
   });
 
   describe('author', function() {
-    before(function(cb) {
-      repo.addRemote('foo', 'https://github.com/jonschlinkert/test-project.git', cb);
-    });
-
-    after(function(cb) {
-      repo.removeRemote('foo', cb);
-    });
-
     it('should not add an empty author field', function() {
       var res = config.normalize({});
       assert(!res.hasOwnProperty('author'));
@@ -474,14 +450,6 @@ describe('normalize', function() {
   });
 
   describe('repository', function() {
-    before(function(cb) {
-      repo.addRemote('foo', 'https://github.com/jonschlinkert/test-project.git', cb);
-    });
-
-    after(function(cb) {
-      repo.removeRemote('foo', cb);
-    });
-
     it('should use the given repository', function() {
       var pkg = {repository: 'jonschlinkert/foo'};
       var res = config.normalize(pkg);
@@ -511,7 +479,6 @@ describe('normalize', function() {
 
     it('should fix the bugs value based on repo information', function() {
       var pkg = {bugs: {url: 'jonschlinkert/foo'}};
-
       var res = config.normalize(pkg);
       assert(res.bugs);
       assert.equal(res.bugs.url, 'https://github.com/jonschlinkert/foo/issues');
@@ -531,7 +498,7 @@ describe('normalize', function() {
           bugs: {
             type: ['string', 'object'],
             normalize: function custom() {
-              return { url: 'abc' }
+              return { url: 'abc' };
             }
           }
         }
@@ -550,7 +517,7 @@ describe('normalize', function() {
             normalize: function custom(key, val, config, schema) {
               schema.update('repository', config);
               var bugs = {};
-              bugs.url = config.homepage + '/bugs'
+              bugs.url = config.homepage + '/bugs';
               return bugs;
             }
           }
@@ -573,7 +540,7 @@ describe('normalize', function() {
             normalize: function custom(key, val, config, schema) {
               schema.update('repository', config);
               var bugs = {};
-              bugs.url = config.homepage + '/bugs'
+              bugs.url = config.homepage + '/bugs';
               return bugs;
             }
           }
@@ -727,7 +694,7 @@ describe('normalize', function() {
         }
       });
 
-      var res = config.normalize(pkg);
+      config.normalize(pkg);
       assert.equal(count, 1);
       cb();
     });
@@ -825,15 +792,22 @@ describe('normalize', function() {
     it('should return bin as-is when it is a string', function() {
       var pkg = {bin: 'main.js'};
 
-      var res = config.normalize(pkg, {bin: false});
+      var res = config.normalize(pkg);
       assert(res.bin);
       assert.equal(res.bin, 'main.js');
+    });
+
+    it('should not add bin file to `files` when `options.bin` is false', function() {
+      var pkg = {bin: 'main.js'};
+
+      var res = config.normalize(pkg, {bin: false});
+      assert(!res.files);
     });
 
     it('should add bin file to `files`', function() {
       var pkg = {bin: 'main.js'};
 
-      var res = config.normalize(pkg, {bin: false});
+      var res = config.normalize(pkg);
       assert(res.files);
       assert.equal(res.files[0], 'main.js');
     });

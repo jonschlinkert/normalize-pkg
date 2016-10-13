@@ -4,15 +4,15 @@ require('mocha');
 var fs = require('fs');
 var path = require('path');
 var assert = require('assert');
-var gitty = require('gitty');
+var createRepo = require('./support/git');
 var Normalizer = require('..');
 var del = require('delete');
 var config;
-var repo;
 
+var origCwd = process.cwd();
 var project = path.resolve(__dirname, 'fixtures/project-bin');
-var git = path.resolve(project, '.git');
-var cwd = process.cwd();
+var remote = `https://github.com/jonschlinkert/${path.basename(project)}.git`;
+var gitPath = path.resolve(project, '.git');
 
 describe('normalize (bin)', function() {
   beforeEach(function() {
@@ -21,20 +21,12 @@ describe('normalize (bin)', function() {
 
   before(function(cb) {
     process.chdir(project);
-    del(git, function(err) {
-      if (err) return cb(err);
-
-      repo = gitty(project);
-      repo.initSync();
-      repo.addSync(['.']);
-      repo.commitSync('first commit');
-      cb();
-    });
+    createRepo(project, remote, cb);
   });
 
   after(function(cb) {
-    process.chdir(cwd);
-    del(git, cb);
+    process.chdir(origCwd);
+    del(gitPath, cb);
   });
 
   describe('main', function() {
@@ -130,7 +122,7 @@ describe('normalize (bin)', function() {
     it('should return bin as-is when it is a string', function() {
       var pkg = {bin: 'main.js'};
 
-      var res = config.normalize(pkg, {bin: false});
+      var res = config.normalize(pkg);
       assert(res.bin);
       assert.equal(res.bin, 'main.js');
     });
