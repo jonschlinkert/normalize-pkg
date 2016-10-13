@@ -106,8 +106,21 @@ NormalizePkg.prototype.normalize = function(pkg, options) {
   if (typeof pkg === 'string') {
     pkg = utils.requirePackage(pkg);
   }
+
+  if (options && options.fields) {
+    var fields = options.fields;
+    delete options.fields;
+
+    for (var key in fields) {
+      if (fields.hasOwnProperty(key)) {
+        var val = utils.merge({}, options, fields[key]);
+        this.field(key, val.type, val);
+      }
+    }
+  }
+
   this.schema.options = utils.merge({}, this.schema.options, options);
-  return this.schema.normalize(pkg, options);
+  return this.schema.normalize(pkg, this.schema.options);
 };
 
 /**
