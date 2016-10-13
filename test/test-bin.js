@@ -4,9 +4,9 @@ require('mocha');
 var fs = require('fs');
 var path = require('path');
 var assert = require('assert');
+var del = require('delete');
 var createRepo = require('./support/git');
 var Normalizer = require('..');
-var del = require('delete');
 var config;
 
 var origCwd = process.cwd();

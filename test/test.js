@@ -11,7 +11,7 @@ var config;
 var origCwd = process.cwd();
 var remote = 'https://github.com/jonschlinkert/test-project.git';
 var project = path.resolve(__dirname, 'fixtures/project');
-var git = path.resolve(project, '.git');
+var gitPath = path.resolve(project, '.git');
 
 describe('normalize', function() {
   beforeEach(function() {
@@ -25,7 +25,7 @@ describe('normalize', function() {
 
   after(function(cb) {
     process.chdir(origCwd);
-    del(git, cb);
+    del(gitPath, cb);
   });
 
   describe('Normalizer', function() {

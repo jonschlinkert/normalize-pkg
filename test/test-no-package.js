@@ -3,26 +3,30 @@
 require('mocha');
 var path = require('path');
 var assert = require('assert');
-var gitty = require('gitty');
+var del = require('delete');
+var createRepo = require('./support/git');
 var Normalizer = require('..');
 var config;
 var repo;
 
 var origCwd = process.cwd();
+var remote = 'https://github.com/jonschlinkert/project-no-package.git';
 var project = path.resolve(__dirname, 'fixtures/project-no-package');
+var gitPath = path.resolve(project, '.git');
 
 describe('normalize (no package.json)', function() {
   beforeEach(function() {
     config = new Normalizer({verbose: false});
   });
 
-  before(function() {
+  before(function(cb) {
     process.chdir(project);
-    repo = gitty(project);
+    createRepo(project, remote, cb);
   });
 
-  after(function() {
+  after(function(cb) {
     process.chdir(origCwd);
+    del(gitPath, cb);
   });
 
   describe('omit', function() {
@@ -343,14 +347,6 @@ describe('normalize (no package.json)', function() {
   });
 
   describe('repository', function() {
-    before(function(cb) {
-      repo.addRemote('origin', 'https://github.com/jonschlinkert/project-no-package.git', cb);
-    });
-
-    after(function(cb) {
-      repo.removeRemote('origin', cb);
-    });
-
     it('should use the given repository', function() {
       var pkg = {repository: 'jonschlinkert/foo'};
       var res = config.normalize(pkg);
