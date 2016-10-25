@@ -51,7 +51,7 @@
   "devDependencies": {
     "delete": "^0.3.2",
     "gitty": "^3.5.0",
-    "gulp": "^3.9.1",
+    "gulp": "github:gulpjs/gulp#4.0",
     "gulp-eslint": "^3.0.1",
     "gulp-format-md": "^0.1.11",
     "gulp-istanbul": "^1.1.1",

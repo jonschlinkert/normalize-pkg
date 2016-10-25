@@ -14,11 +14,11 @@ gulp.task('coverage', function() {
     .pipe(istanbul.hookRequire());
 });
 
-gulp.task('test', ['coverage'], function() {
+gulp.task('test', gulp.series('coverage', function() {
   return gulp.src('test/*.js')
     .pipe(mocha({reporter: 'spec'}))
     .pipe(istanbul.writeReports());
-});
+}));
 
 gulp.task('lint', function() {
   return gulp.src(lint.concat(['test/*.js', 'gulpfile.js']))
@@ -32,4 +32,4 @@ gulp.task('unused', function() {
     .pipe(unused({keys: keys}));
 });
 
-gulp.task('default', ['test', 'lint']);
+gulp.task('default', gulp.series('lint', 'test'));
