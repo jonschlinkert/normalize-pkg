@@ -387,7 +387,7 @@ describe('no git repository', function() {
       assert.equal(res.bugs.url, 'https://github.com/jonschlinkert/foo/issues');
     });
 
-    it('should use the given bugs value', function() {
+    it.skip('should use the given bugs value', function() {
       var opts = {bugs: {url: 'jonschlinkert/foo'}};
       var res = config.normalize({}, opts);
       assert(res.bugs);
