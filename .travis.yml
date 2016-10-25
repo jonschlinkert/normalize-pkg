@@ -5,3 +5,7 @@ node_js:
   - '6'
   - '5'
   - '0.12'
+
+before_install:
+  - git config --global user.email "jon.schlinkert@sellside.com"
+  - git config --global user.name "jonschlinkert"
