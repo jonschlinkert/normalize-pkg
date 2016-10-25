@@ -4,7 +4,9 @@ require('mocha');
 var path = require('path');
 var assert = require('assert');
 var Normalizer = require('..');
+var utils = require('../lib/utils');
 var config;
+var user;
 
 var origCwd = process.cwd();
 var project = path.resolve(__dirname, 'fixtures/project-no-git');
@@ -16,6 +18,12 @@ describe('no git repository', function() {
 
   beforeEach(function() {
     process.chdir(project);
+    try {
+      user = utils.parseGitConfig.sync().user.name;
+    } catch (err) {
+      console.error(err);
+      user = 'jonschlinkert';
+    }
   });
 
   afterEach(function() {
@@ -227,12 +235,12 @@ describe('no git repository', function() {
   describe('homepage', function() {
     it('should add a homepage from directory name and user from global git config', function() {
       var res = config.normalize({});
-      assert.equal(res.homepage, 'https://github.com/jonschlinkert/project-no-git');
+      assert.equal(res.homepage, 'https://github.com/' + user + '/project-no-git');
     });
 
     it('should add repository when setting homepage', function() {
       var res = config.normalize({});
-      assert.equal(res.repository, 'jonschlinkert/project-no-git');
+      assert.equal(res.repository, user + '/project-no-git');
     });
 
     it('should use the given homepage', function() {
@@ -368,7 +376,7 @@ describe('no git repository', function() {
     it('should get the bugs url from the directory name', function() {
       var res = config.normalize({});
       assert(res.bugs);
-      assert.equal(res.bugs.url, 'https://github.com/jonschlinkert/project-no-git/issues');
+      assert.equal(res.bugs.url, 'https://github.com/' + user + '/project-no-git/issues');
     });
 
     it('should fix the bugs value based on repo information', function() {
