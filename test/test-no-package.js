@@ -7,7 +7,6 @@ var del = require('delete');
 var createRepo = require('./support/git');
 var Normalizer = require('..');
 var config;
-var repo;
 
 var origCwd = process.cwd();
 var remote = 'https://github.com/jonschlinkert/project-no-package.git';
