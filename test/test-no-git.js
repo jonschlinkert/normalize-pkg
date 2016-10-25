@@ -21,7 +21,6 @@ describe('no git repository', function() {
     try {
       user = utils.parseGitConfig.sync().user.name;
     } catch (err) {
-      console.error(err);
       user = 'jonschlinkert';
     }
   });
