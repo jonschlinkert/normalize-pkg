@@ -11,7 +11,7 @@ var config;
 
 var origCwd = process.cwd();
 var project = path.resolve(__dirname, 'fixtures/project-bin');
-var remote = `https://github.com/jonschlinkert/${path.basename(project)}.git`;
+var remote = 'https://github.com/jonschlinkert/' + path.basename(project) + '.git';
 var gitPath = path.resolve(project, '.git');
 
 describe('normalize (bin)', function() {
