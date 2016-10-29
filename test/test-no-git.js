@@ -19,7 +19,7 @@ describe('no git repository', function() {
   beforeEach(function() {
     process.chdir(project);
     try {
-      user = utils.parseGitConfig.sync().user.name;
+      user = utils.repo.gitUserName();
     } catch (err) {
       user = 'jonschlinkert';
     }
