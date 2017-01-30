@@ -1,11 +1,16 @@
 sudo: false
+os:
+  - linux
+  - osx
 language: node_js
 node_js:
   - node
   - '6'
-  - '5'
+  - '4'
   - '0.12'
-
-before_install:
-  - git config --global user.email "jon.schlinkert@sellside.com"
-  - git config --global user.name "jonschlinkert"
+  - '0.10'
+matrix:
+  allow_failures:
+    - node_js: '4'
+    - node_js: '0.12'
+    - node_js: '0.10'
