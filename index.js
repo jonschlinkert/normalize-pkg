@@ -120,7 +120,10 @@ NormalizePkg.prototype.normalize = function(pkg, options) {
   }
 
   this.schema.options = utils.merge({}, this.schema.options, options);
-  return this.schema.normalize(pkg, this.schema.options);
+  var obj = this.schema.normalize(pkg, this.schema.options);
+  this.schema.emit('normalized', obj);
+  this.emit('normalized', obj);
+  return obj;
 };
 
 /**
