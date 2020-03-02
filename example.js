@@ -1,7 +1,7 @@
 'use strict';
 
-var Normalizer = require('./');
-var config = new Normalizer();
+const Normalizer = require('./');
+const config = new Normalizer();
 
 console.log(JSON.stringify(config.normalize(require('./test/fixtures/people')), null, 2));
 

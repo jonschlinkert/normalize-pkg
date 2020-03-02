@@ -1,11 +1,11 @@
 'use strict';
 
-var path = require('path');
-var del = require('delete');
-var gitty = require('gitty');
+const path = require('path');
+const del = require('delete');
+const gitty = require('gitty');
 
 module.exports = function(cwd, remote, cb) {
-  var repo = gitty(cwd);
+  const repo = gitty(cwd);
 
   del(path.join(cwd, '.git'), function(err) {
     if (err) return cb(err);

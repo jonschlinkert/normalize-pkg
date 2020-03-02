@@ -1,21 +1,21 @@
 'use strict';
 
 require('mocha');
-var path = require('path');
-var assert = require('assert');
-var del = require('delete');
-var createRepo = require('./support/git');
-var Normalizer = require('..');
-var config;
+const path = require('path');
+const assert = require('assert');
+const del = require('delete');
+const createRepo = require('./support/git');
+const Normalizer = require('..');
+let config;
 
-var origCwd = process.cwd();
-var remote = 'https://github.com/jonschlinkert/project-no-package.git';
-var project = path.resolve(__dirname, 'fixtures/project-no-package');
-var gitPath = path.resolve(project, '.git');
+const origCwd = process.cwd();
+const remote = 'https://github.com/jonschlinkert/project-no-package.git';
+const project = path.resolve(__dirname, 'fixtures/project-no-package');
+const gitPath = path.resolve(project, '.git');
 
-describe('normalize (no package.json)', function() {
-  beforeEach(function() {
-    config = new Normalizer({verbose: false});
+describe('normalize (no package.json)', () => {
+  beforeEach(() => {
+    config = new Normalizer({ verbose: false });
   });
 
   before(function(cb) {
@@ -28,54 +28,54 @@ describe('normalize (no package.json)', function() {
     del(gitPath, cb);
   });
 
-  describe('omit', function() {
-    it('should remove a field on options.omit', function() {
-      config = new Normalizer({omit: 'version'});
-      var res = config.normalize({});
+  describe('omit', () => {
+    it('should remove a field on options.omit', () => {
+      config = new Normalizer({ omit: 'version' });
+      const res = config.normalize({});
       assert.equal(typeof res.version, 'undefined');
     });
 
-    it('should remove an array of fields on options.omit', function() {
-      config = new Normalizer({omit: ['version', 'main']});
-      var res = config.normalize({});
+    it('should remove an array of fields on options.omit', () => {
+      config = new Normalizer({ omit: ['version', 'main'] });
+      const res = config.normalize({});
       assert.equal(typeof res.version, 'undefined');
       assert.equal(typeof res.main, 'undefined');
     });
   });
 
-  describe('defaults', function() {
-    it('should add default properties to config', function() {
-      var res = config.normalize({});
+  describe('defaults', () => {
+    it('should add default properties to config', () => {
+      const res = config.normalize({});
       assert.equal(res.name, 'project-no-package');
       assert.equal(res.version, '0.1.0');
     });
   });
 
-  describe('name', function() {
-    it('should use the defined project name', function() {
-      var pkg = { name: 'foo' };
-      var res = config.normalize(pkg);
+  describe('name', () => {
+    it('should use the defined project name', () => {
+      const pkg = { name: 'foo' };
+      const res = config.normalize(pkg);
       assert(res.name);
       assert.equal(res.name, 'foo');
     });
 
-    it('should get the project name when string is empty', function() {
-      var pkg = { name: '' };
-      var res = config.normalize(pkg);
+    it('should get the project name when string is empty', () => {
+      const pkg = { name: '' };
+      const res = config.normalize(pkg);
       assert(res.name);
       assert.equal(res.name, 'project-no-package');
     });
 
-    it('should get the project name when missing', function() {
-      var pkg = {};
-      var res = config.normalize(pkg);
+    it('should get the project name when missing', () => {
+      const pkg = {};
+      const res = config.normalize(pkg);
       assert(res.name);
       assert.equal(res.name, 'project-no-package');
     });
 
-    it('should use the normalize function defined on options', function() {
-      var pkg = { name: 'foo' };
-      var opts = {
+    it('should use the normalize function defined on options', () => {
+      const pkg = { name: 'foo' };
+      const opts = {
         fields: {
           name: {
             type: ['string'],
@@ -86,30 +86,30 @@ describe('normalize (no package.json)', function() {
         }
       };
 
-      var res = config.normalize(pkg, opts);
+      const res = config.normalize(pkg, opts);
       assert(res.name);
       assert.equal(res.name, 'bar');
     });
   });
 
-  describe('version', function() {
-    it('should use the given version', function() {
-      var pkg = {version: '1.0.0'};
-      var res = config.normalize(pkg);
+  describe('version', () => {
+    it('should use the given version', () => {
+      const pkg = { version: '1.0.0' };
+      const res = config.normalize(pkg);
       assert(res.version);
       assert.equal(res.version, '1.0.0');
     });
 
-    it('should use the default version', function() {
-      var pkg = {version: ''};
-      var res = config.normalize(pkg);
+    it('should use the default version', () => {
+      const pkg = { version: '' };
+      const res = config.normalize(pkg);
       assert(res.version);
       assert.equal(res.version, '0.1.0');
     });
 
-    it('should emit a warning when version type is invalid', function(cb) {
-      var pkg = {version: 5};
-      var count = 0;
+    it('should emit a warning when version type is invalid', cb => {
+      const pkg = { version: 5 };
+      let count = 0;
 
       config.on('warning', function(method, key, err) {
         if (key === 'version') {
@@ -122,8 +122,8 @@ describe('normalize (no package.json)', function() {
       cb();
     });
 
-    it('should throw an error when version is invalid', function(cb) {
-      var pkg = {version: 'foo'};
+    it('should throw an error when version is invalid', cb => {
+      const pkg = { version: 'foo' };
       try {
         config.normalize(pkg);
         cb(new Error('expected an error'));
@@ -134,263 +134,263 @@ describe('normalize (no package.json)', function() {
     });
   });
 
-  describe('main', function() {
-    it('should remove the property if the file does not exist', function() {
-      var pkg = { main: 'foo.js' };
-      var res = config.normalize(pkg);
+  describe('main', () => {
+    it('should remove the property if the file does not exist', () => {
+      const pkg = { main: 'foo.js' };
+      const res = config.normalize(pkg);
       assert(!res.hasOwnProperty('main'));
     });
 
-    it('should not remove the property if the file exists', function() {
-      var pkg = { main: 'main.js' };
-      var res = config.normalize(pkg);
+    it('should not remove the property if the file exists', () => {
+      const pkg = { main: 'main.js' };
+      const res = config.normalize(pkg);
       assert(res.hasOwnProperty('main'));
     });
 
-    it('should add the main file to the `files` array', function() {
-      var pkg = { main: 'main.js' };
-      var res = config.normalize(pkg);
+    it('should add the main file to the `files` array', () => {
+      const pkg = { main: 'main.js' };
+      const res = config.normalize(pkg);
       assert.equal(res.files.indexOf('main.js'), 0);
     });
 
-    it('should not add main file to files array when main file does not exist', function() {
-      var pkg = {
+    it('should not add main file to files array when main file does not exist', () => {
+      const pkg = {
         files: [],
         main: 'index.js'
       };
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert(!res.hasOwnProperty('files'));
     });
 
-    it('should add main file to files array if files array is empty', function() {
-      var pkg = {
+    it('should add main file to files array if files array is empty', () => {
+      const pkg = {
         files: [],
         main: 'main.js'
       };
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert.equal(res.files.length, 1);
       assert.equal(res.files[0], 'main.js');
     });
 
-    it('should create files array with main if undefined', function() {
-      var pkg = {
+    it('should create files array with main if undefined', () => {
+      const pkg = {
         main: 'main.js'
       };
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert(res.files.length);
       assert(res.files.indexOf('main.js') !== -1);
     });
 
-    it('should not double add the file to files', function() {
-      var pkg = {
+    it('should not double add the file to files', () => {
+      const pkg = {
         files: ['main.js'],
         main: 'main.js'
       };
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert.equal(res.files.length, 1);
       assert(res.files.indexOf('main.js') !== -1);
     });
 
-    it('should remove main if the file does not exist', function() {
-      var pkg = { main: 'foo.js' };
+    it('should remove main if the file does not exist', () => {
+      const pkg = { main: 'foo.js' };
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert(!res.main);
     });
 
-    it('should do nothing if not defined', function() {
-      var pkg = {};
+    it('should do nothing if not defined', () => {
+      const pkg = {};
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert.equal(typeof res.main, 'undefined');
     });
   });
 
-  describe('files', function() {
-    it('should remove a file if it does not exist', function() {
-      var pkg = { files: ['foo.js', 'main.js'] };
-      var res = config.normalize(pkg);
+  describe('files', () => {
+    it('should remove a file if it does not exist', () => {
+      const pkg = { files: ['foo.js', 'main.js'] };
+      const res = config.normalize(pkg);
       assert.equal(res.files.length, 1);
     });
 
-    it('should remove the files array if it\'s empty', function() {
-      var pkg = { files: [] };
-      var res = config.normalize(pkg);
+    it('should remove the files array if it\'s empty', () => {
+      const pkg = { files: [] };
+      const res = config.normalize(pkg);
       assert(!res.files);
     });
 
-    it('should remove the files array if a file that does not exist is removed', function() {
-      var pkg = { files: ['foo.js'] };
-      var res = config.normalize(pkg);
+    it('should remove the files array if a file that does not exist is removed', () => {
+      const pkg = { files: ['foo.js'] };
+      const res = config.normalize(pkg);
       assert(!res.files);
     });
   });
 
-  describe('homepage', function() {
-    it('should add a homepage from git repository', function() {
-      var res = config.normalize({});
+  describe('homepage', () => {
+    it('should add a homepage from git repository', () => {
+      const res = config.normalize({});
       assert(res.homepage);
       assert.equal(res.homepage, 'https://github.com/jonschlinkert/project-no-package');
     });
 
-    it('should add repository when setting homepage', function() {
-      var res = config.normalize({});
+    it('should add repository when setting homepage', () => {
+      const res = config.normalize({});
       assert(res.homepage);
       assert.equal(res.repository, 'jonschlinkert/project-no-package');
     });
 
-    it('should use the given homepage', function() {
-      var pkg = {homepage: 'https://github.com/assemble/assemble'};
-      var res = config.normalize(pkg);
+    it('should use the given homepage', () => {
+      const pkg = { homepage: 'https://github.com/assemble/assemble' };
+      const res = config.normalize(pkg);
       assert(res.homepage);
       assert.equal(res.homepage, 'https://github.com/assemble/assemble');
     });
 
-    it('should get homepage from repository.url', function() {
-      var pkg = {
+    it('should get homepage from repository.url', () => {
+      const pkg = {
         homepage: '',
         repository: 'git://github.com/jonschlinkert/project-no-package.git'
       };
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert(res.homepage);
       assert.equal(res.homepage, 'https://github.com/jonschlinkert/project-no-package');
     });
   });
 
-  describe('author', function() {
-    it('should not add an empty author field', function() {
-      var res = config.normalize({});
+  describe('author', () => {
+    it('should not add an empty author field', () => {
+      const res = config.normalize({});
       assert(!res.hasOwnProperty('author'));
     });
 
-    it('should return an author string as is', function() {
-      var pkg = { author: 'Jon Schlinkert' };
-      var res = config.normalize(pkg);
+    it('should return an author string as is', () => {
+      const pkg = { author: 'Jon Schlinkert' };
+      const res = config.normalize(pkg);
       assert.equal(res.author, 'Jon Schlinkert');
     });
 
-    it('should convert an author object to a string', function() {
-      var pkg = {
+    it('should convert an author object to a string', () => {
+      const pkg = {
         author: {
           name: 'Jon Schlinkert',
           url: 'https://github.com/jonschlinkert'
         }
       };
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert.equal(res.author, 'Jon Schlinkert (https://github.com/jonschlinkert)');
     });
   });
 
-  describe('maintainers', function() {
-    it('should not add an empty maintainers field', function() {
-      var res = config.normalize({});
+  describe('maintainers', () => {
+    it('should not add an empty maintainers field', () => {
+      const res = config.normalize({});
       assert(!res.hasOwnProperty('maintainers'));
     });
   });
 
-  describe('license', function() {
-    it('should add MIT as the default license', function() {
-      var res = config.normalize({});
+  describe('license', () => {
+    it('should add MIT as the default license', () => {
+      const res = config.normalize({});
       assert(res.hasOwnProperty('license'));
       assert.equal(res.license, 'MIT');
     });
 
-    it('should return license as is if it is a string', function() {
-      var res = config.normalize({license: 'MIT'});
+    it('should return license as is if it is a string', () => {
+      const res = config.normalize({ license: 'MIT' });
       assert(res.hasOwnProperty('license'));
       assert.equal(res.license, 'MIT');
     });
 
-    it('should convert from an object to a string', function() {
-      var res = config.normalize({license: {type: 'MIT'}});
+    it('should convert from an object to a string', () => {
+      const res = config.normalize({ license: { type: 'MIT' } });
       assert(res.hasOwnProperty('license'));
       assert.equal(res.license, 'MIT');
     });
 
-    it('should convert from an array to a string', function() {
-      var res = config.normalize({license: [{type: 'MIT'}]});
+    it('should convert from an array to a string', () => {
+      const res = config.normalize({ license: [{ type: 'MIT' }] });
       assert(res.hasOwnProperty('license'));
       assert.equal(res.license, 'MIT');
     });
   });
 
-  describe('people', function() {
-    beforeEach(function() {
-      config = new Normalizer({verbose: false});
+  describe('people', () => {
+    beforeEach(() => {
+      config = new Normalizer({ verbose: false });
     });
 
-    describe('contributors', function() {
-      it('should not add an empty contributors field', function() {
-        var res = config.normalize({});
+    describe('contributors', () => {
+      it('should not add an empty contributors field', () => {
+        const res = config.normalize({});
         assert(!res.hasOwnProperty('contributors'));
       });
 
-      it('should stringify authors', function() {
-        var pkg = {
+      it('should stringify authors', () => {
+        const pkg = {
           contributors: [{
             name: 'Jon Schlinkert',
             url: 'https://github.com/jonschlinkert'
           }]
         };
 
-        var res = config.normalize(pkg);
+        const res = config.normalize(pkg);
         assert.equal(res.contributors[0], 'Jon Schlinkert (https://github.com/jonschlinkert)');
       });
     });
   });
 
-  describe('repository', function() {
-    it('should use the given repository', function() {
-      var pkg = {repository: 'jonschlinkert/foo'};
-      var res = config.normalize(pkg);
+  describe('repository', () => {
+    it('should use the given repository', () => {
+      const pkg = { repository: 'jonschlinkert/foo' };
+      const res = config.normalize(pkg);
       assert(res.repository);
       assert.equal(res.repository, 'jonschlinkert/foo');
     });
 
-    it('should use the git remote url', function() {
-      var pkg = {repository: ''};
-      var res = config.normalize(pkg);
+    it('should use the git remote url', () => {
+      const pkg = { repository: '' };
+      const res = config.normalize(pkg);
       assert(res.repository);
       assert.equal(res.repository, 'jonschlinkert/project-no-package');
     });
 
-    it('should convert repository.url to a string', function() {
-      var pkg = {repository: {url: 'https://github.com/jonschlinkert/foo.git'}};
-      var res = config.normalize(pkg);
+    it('should convert repository.url to a string', () => {
+      const pkg = { repository: { url: 'https://github.com/jonschlinkert/foo.git' } };
+      const res = config.normalize(pkg);
       assert(res.repository);
       assert.equal(res.repository, 'jonschlinkert/foo');
     });
   });
 
-  describe('bugs', function() {
-    beforeEach(function() {
-      config = new Normalizer({verbose: false});
+  describe('bugs', () => {
+    beforeEach(() => {
+      config = new Normalizer({ verbose: false });
     });
 
-    it('should return bugs value ', function() {
-      var pkg = {bugs: {url: 'jonschlinkert/foo'}};
+    it('should return bugs value ', () => {
+      const pkg = { bugs: { url: 'jonschlinkert/foo' } };
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert(res.bugs);
       assert.equal(res.bugs.url, 'https://github.com/jonschlinkert/foo/issues');
     });
 
-    it.skip('should use the given bugs value', function() {
-      var opts = {bugs: {url: 'jonschlinkert/foo'}};
-      var res = config.normalize({}, opts);
+    it('should use the given bugs value', () => {
+      const opts = { bugs: { url: 'jonschlinkert/foo' } };
+      const res = config.normalize({}, opts);
       assert(res.bugs);
       assert.equal(res.bugs.url, 'https://github.com/jonschlinkert/foo/issues');
     });
 
-    it('should use the value function passed on options', function() {
-      var pkg = { bugs: '' };
-      var res = config.normalize(pkg, {
+    it('should use the value function passed on options', () => {
+      const pkg = { bugs: '' };
+      const res = config.normalize(pkg, {
         fields: {
           bugs: {
             type: ['string', 'object'],
@@ -404,16 +404,16 @@ describe('normalize (no package.json)', function() {
       assert.equal(res.bugs.url, 'abc');
     });
 
-    it('should use a custom type passed on options', function() {
-      var pkg = { bugs: '', repository: 'https://github.com/foo' };
-      var res = config.normalize(pkg, {
+    it('should use a custom type passed on options', () => {
+      const pkg = { bugs: '', repository: 'https://github.com/foo' };
+      const res = config.normalize(pkg, {
         extend: false,
         fields: {
           bugs: {
             type: ['object', 'string'],
             normalize: function custom(key, val, config, schema) {
               schema.update('repository', config);
-              var bugs = {};
+              const bugs = {};
               bugs.url = config.repository + '/bugs';
               return bugs;
             }
@@ -426,9 +426,9 @@ describe('normalize (no package.json)', function() {
       assert.equal(res.bugs.url, 'https://github.com/foo/bugs');
     });
 
-    it('should convert bugs.url to a string when specified', function() {
-      var pkg = {bugs: {url: 'https://github.com/jonschlinkert/foo.git'}};
-      var res = config.normalize(pkg, {
+    it('should convert bugs.url to a string when specified', () => {
+      const pkg = { bugs: { url: 'https://github.com/jonschlinkert/foo.git' } };
+      const res = config.normalize(pkg, {
         extend: false,
         fields: {
           bugs: {
@@ -444,33 +444,33 @@ describe('normalize (no package.json)', function() {
     });
   });
 
-  describe('license', function() {
-    beforeEach(function() {
-      config = new Normalizer({verbose: false});
+  describe('license', () => {
+    beforeEach(() => {
+      config = new Normalizer({ verbose: false });
     });
 
-    it('should convert a license object to a string', function() {
-      var pkg = {
+    it('should convert a license object to a string', () => {
+      const pkg = {
         license: {
           type: 'MIT',
           url: 'https://github.com/jonschlinkert/project-no-package/blob/master/LICENSE-MIT'
         }
       };
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert.equal(typeof res.license, 'string');
       assert.equal(res.license, 'MIT');
     });
   });
 
-  describe('licenses', function() {
-    beforeEach(function() {
-      config = new Normalizer({verbose: false});
+  describe('licenses', () => {
+    beforeEach(() => {
+      config = new Normalizer({ verbose: false });
     });
 
-    it('should emit a deprecation warning when licenses is defined', function(cb) {
-      var pkg = {licenses: {type: 'MIT'}};
-      var count = 0;
+    it('should emit a deprecation warning when licenses is defined', cb => {
+      const pkg = { licenses: { type: 'MIT' } };
+      let count = 0;
 
       config.on('warning', function(method, key, err) {
         if (key === 'licenses') {
@@ -483,26 +483,26 @@ describe('normalize (no package.json)', function() {
       cb();
     });
 
-    it('should convert a licenses array to a license string', function() {
-      var pkg = {
+    it('should convert a licenses array to a license string', () => {
+      const pkg = {
         licenses: [
-          {type: 'MIT', url: 'https://github.com/jonschlinkert/project-no-package/blob/master/LICENSE-MIT'}
+          { type: 'MIT', url: 'https://github.com/jonschlinkert/project-no-package/blob/master/LICENSE-MIT' }
         ]
       };
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert(!res.licenses);
       assert(res.license);
       assert.equal(typeof res.license, 'string');
       assert.equal(res.license, 'MIT');
     });
 
-    it('should convert from an object to a string', function() {
-      var pkg = {
-        licenses: {type: 'MIT', url: 'https://github.com/jonschlinkert/project-no-package/blob/master/LICENSE-MIT'}
+    it('should convert from an object to a string', () => {
+      const pkg = {
+        licenses: { type: 'MIT', url: 'https://github.com/jonschlinkert/project-no-package/blob/master/LICENSE-MIT' }
       };
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert(!res.licenses);
       assert(res.license);
       assert.equal(typeof res.license, 'string');
@@ -510,57 +510,57 @@ describe('normalize (no package.json)', function() {
     });
   });
 
-  describe('dependencies', function() {
-    beforeEach(function() {
-      config = new Normalizer({verbose: false});
+  describe('dependencies', () => {
+    beforeEach(() => {
+      config = new Normalizer({ verbose: false });
     });
 
-    it('should remove dependencies when empty when `omitEmpty` is true', function() {
-      var pkg = {dependencies: {}};
-      var res = config.normalize(pkg, {omitEmpty: true});
+    it('should remove dependencies when empty when `omitEmpty` is true', () => {
+      const pkg = { dependencies: {} };
+      const res = config.normalize(pkg, { omitEmpty: true });
       assert(!res.dependencies);
     });
   });
 
-  describe('devDependencies', function() {
-    beforeEach(function() {
-      config = new Normalizer({verbose: false});
+  describe('devDependencies', () => {
+    beforeEach(() => {
+      config = new Normalizer({ verbose: false });
     });
 
-    it('should remove empty devDependencies when omitEmpty is true', function() {
-      var pkg = {devDependencies: {}};
-      var res = config.normalize(pkg, {omitEmpty: true});
+    it('should remove empty devDependencies when omitEmpty is true', () => {
+      const pkg = { devDependencies: {} };
+      const res = config.normalize(pkg, { omitEmpty: true });
       assert(!res.devDependencies);
     });
   });
 
-  describe('engineStrict', function() {
-    beforeEach(function() {
-      config = new Normalizer({verbose: false});
+  describe('engineStrict', () => {
+    beforeEach(() => {
+      config = new Normalizer({ verbose: false });
     });
 
-    it('should delete engineStrict and replace it with engine-strict', function() {
-      var pkg = { engineStrict: true };
-      var res = config.normalize(pkg);
+    it('should delete engineStrict and replace it with engine-strict', () => {
+      const pkg = { engineStrict: true };
+      const res = config.normalize(pkg);
       assert.equal(typeof res.engineStrict, 'undefined');
       assert.equal(res['engine-strict'], true);
     });
 
-    it('should remove engineStrict from the object', function() {
-      var pkg = { engineStrict: true };
-      var res = config.normalize(pkg);
+    it('should remove engineStrict from the object', () => {
+      const pkg = { engineStrict: true };
+      const res = config.normalize(pkg);
       assert(!res.hasOwnProperty('engineStrict'));
     });
   });
 
-  describe('engine-strict', function() {
-    beforeEach(function() {
-      config = new Normalizer({verbose: false});
+  describe('engine-strict', () => {
+    beforeEach(() => {
+      config = new Normalizer({ verbose: false });
     });
 
-    it('should warn when engine-strict value is invalid', function(cb) {
-      var pkg = { 'engine-strict': 'foo' };
-      var count = 0;
+    it('should warn when engine-strict value is invalid', cb => {
+      const pkg = { 'engine-strict': 'foo' };
+      let count = 0;
 
       config.on('warning', function(method, key, err) {
         if (key === 'engine-strict') {
@@ -574,66 +574,66 @@ describe('normalize (no package.json)', function() {
     });
   });
 
-  describe('scripts', function() {
-    beforeEach(function() {
-      config = new Normalizer({verbose: false});
+  describe('scripts', () => {
+    beforeEach(() => {
+      config = new Normalizer({ verbose: false });
     });
 
-    it('should clean up mocha scripts', function() {
-      var pkg = {scripts: {test: 'mocha -R spec'} };
+    it('should clean up mocha scripts', () => {
+      const pkg = { scripts: { test: 'mocha -R spec' } };
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert(res.scripts);
       assert.equal(typeof res.scripts, 'object');
       assert.equal(res.scripts.test, 'mocha');
     });
 
-    it('should return scripts if it is an object', function() {
-      var pkg = {scripts: {test: 'foo'} };
+    it('should return scripts if it is an object', () => {
+      const pkg = { scripts: { test: 'foo' } };
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert(res.scripts);
       assert.equal(typeof res.scripts, 'object');
       assert.equal(res.scripts.test, 'foo');
     });
   });
 
-  describe('keywords', function() {
-    beforeEach(function() {
-      config = new Normalizer({verbose: false});
+  describe('keywords', () => {
+    beforeEach(() => {
+      config = new Normalizer({ verbose: false });
     });
 
-    it('should use the name to create keywords when the array is empty', function() {
-      var pkg = { keywords: [] };
-      var res = config.normalize(pkg);
+    it('should use the name to create keywords when the array is empty', () => {
+      const pkg = { keywords: [] };
+      const res = config.normalize(pkg);
       assert.equal(res.keywords[0], 'no');
       assert.equal(res.keywords[1], 'package');
       assert.equal(res.keywords.length, 3);
     });
 
-    it('should sort keywords', function() {
-      var pkg = { keywords: ['foo', 'bar', 'baz'] };
-      var res = config.normalize(pkg);
+    it('should sort keywords', () => {
+      const pkg = { keywords: ['foo', 'bar', 'baz'] };
+      const res = config.normalize(pkg);
       assert.equal(res.keywords[0], 'bar');
       assert.equal(res.keywords[1], 'baz');
       assert.equal(res.keywords[2], 'foo');
     });
 
-    it('should remove duplicates', function() {
-      var pkg = { keywords: ['foo', 'foo', 'foo', 'foo', 'bar', 'baz'] };
-      var res = config.normalize(pkg);
+    it('should remove duplicates', () => {
+      const pkg = { keywords: ['foo', 'foo', 'foo', 'foo', 'bar', 'baz'] };
+      const res = config.normalize(pkg);
       assert.equal(res.keywords.length, 3);
     });
   });
 
-  describe('preferGlobal', function() {
-    beforeEach(function() {
-      config = new Normalizer({verbose: false});
+  describe('preferGlobal', () => {
+    beforeEach(() => {
+      config = new Normalizer({ verbose: false });
     });
 
-    it('should warn when preferGlobal is defined and `bin` is not defined', function(cb) {
-      var pkg = {preferGlobal: true};
-      var count = 0;
+    it('should warn when preferGlobal is defined and `bin` is not defined', cb => {
+      const pkg = { preferGlobal: true };
+      let count = 0;
 
       config.on('warning', function(method, key, err) {
         if (key === 'preferGlobal') {
@@ -641,15 +641,15 @@ describe('normalize (no package.json)', function() {
         }
       });
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert(res.preferGlobal);
       assert.equal(count, 1);
       cb();
     });
 
-    it('should not warn when preferGlobal is defined and `bin` is defined', function(cb) {
-      var pkg = {preferGlobal: true, bin: 'main.js'};
-      var count = 0;
+    it('should not warn when preferGlobal is defined and `bin` is defined', cb => {
+      const pkg = { preferGlobal: true, bin: 'main.js' };
+      let count = 0;
 
       config.on('warning', function(method, key, err) {
         if (key === 'preferGlobal') {
@@ -657,29 +657,29 @@ describe('normalize (no package.json)', function() {
         }
       });
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert(res.preferGlobal);
       assert.equal(count, 0);
       cb();
     });
 
-    it('should return bin as-is when it is a string', function() {
-      var pkg = {bin: 'main.js'};
+    it('should return bin as-is when it is a string', () => {
+      const pkg = { bin: 'main.js' };
 
-      var res = config.normalize(pkg);
+      const res = config.normalize(pkg);
       assert(res.bin);
       assert.equal(res.bin, 'main.js');
     });
   });
 
-  describe('bin', function() {
-    beforeEach(function() {
-      config = new Normalizer({verbose: false});
+  describe('bin', () => {
+    beforeEach(() => {
+      config = new Normalizer({ verbose: false });
     });
 
-    it('should not emit a warning when bin file string exists', function(cb) {
-      var pkg = {bin: 'main.js'};
-      var count = 0;
+    it('should not emit a warning when bin file string exists', cb => {
+      const pkg = { bin: 'main.js' };
+      let count = 0;
 
       config.on('warning', function(method, key, err) {
         if (key === 'bin') {
@@ -692,9 +692,9 @@ describe('normalize (no package.json)', function() {
       cb();
     });
 
-    it('should not emit a warning when bin file object exists', function(cb) {
-      var pkg = {bin: {foo: 'main.js'}};
-      var count = 0;
+    it('should not emit a warning when bin file object exists', cb => {
+      const pkg = { bin: { foo: 'main.js' } };
+      let count = 0;
 
       config.on('warning', function(method, key, err) {
         if (key === 'bin') {

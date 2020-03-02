@@ -1,9 +1,14 @@
-# normalize-pkg [![NPM version](https://img.shields.io/npm/v/normalize-pkg.svg?style=flat)](https://www.npmjs.com/package/normalize-pkg) [![NPM monthly downloads](https://img.shields.io/npm/dm/normalize-pkg.svg?style=flat)](https://npmjs.org/package/normalize-pkg)  [![NPM total downloads](https://img.shields.io/npm/dt/normalize-pkg.svg?style=flat)](https://npmjs.org/package/normalize-pkg) [![Linux Build Status](https://img.shields.io/travis/jonschlinkert/normalize-pkg.svg?style=flat&label=Travis)](https://travis-ci.org/jonschlinkert/normalize-pkg)
+# normalize-pkg [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=W8YFZ425KND68) [![NPM version](https://img.shields.io/npm/v/normalize-pkg.svg?style=flat)](https://www.npmjs.com/package/normalize-pkg) [![NPM monthly downloads](https://img.shields.io/npm/dm/normalize-pkg.svg?style=flat)](https://npmjs.org/package/normalize-pkg) [![NPM total downloads](https://img.shields.io/npm/dt/normalize-pkg.svg?style=flat)](https://npmjs.org/package/normalize-pkg) [![Build Status](https://travis-ci.org/jonschlinkert/normalize-pkg.svg?branch=master)](https://travis-ci.org/jonschlinkert/normalize-pkg)
 
 > Normalize values in package.json using the map-schema library.
 
+Please consider following this project's author, [Jon Schlinkert](https://github.com/jonschlinkert), and consider starring the project to show your :heart: and support.
+
+## Table of Contents
+
 <details>
-<summary><strong>Table of Contents</strong></summary>
+<summary><strong>Details</strong></summary>
+
 - [Install](#install)
 - [Install](#install-1)
 - [Usage](#usage)
@@ -18,11 +23,12 @@
   * [options.fields](#optionsfields)
   * [options.extend](#optionsextend)
 - [About](#about)
+
 </details>
 
 ## Install
 
-Install with [npm](https://www.npmjs.com/):
+Install with [npm](https://www.npmjs.com/) (requires [Node.js](https://nodejs.org/en/) >= 0.10.0):
 
 ```sh
 $ npm install --save normalize-pkg
@@ -110,10 +116,6 @@ Since an empty object was passed, `normalize-pkg` was smart enough to fill in mi
 
 ## API
 
-### [NormalizePkg](index.js#L26)
-
-Create an instance of `NormalizePkg` with the given `options`.
-
 **Params**
 
 * `options` **{Object}**
@@ -121,8 +123,8 @@ Create an instance of `NormalizePkg` with the given `options`.
 **Example**
 
 ```js
-var config = new NormalizePkg();
-var pkg = config.normalize({
+const config = new NormalizePkg();
+const pkg = config.normalize({
   author: {
     name: 'Jon Schlinkert',
     url: 'https://github.com/jonschlinkert'
@@ -131,10 +133,6 @@ var pkg = config.normalize({
 console.log(pkg);
 //=> {author: 'Jon Schlinkert (https://github.com/jonschlinkert)'}
 ```
-
-### [.field](index.js#L76)
-
-Add a field to the schema, or overwrite or extend an existing field. The last argument is an `options` object that supports the following properties:
 
 * `normalize` **{Function}**: function to be called on the value when the `.normalize` method is called
 * `default` **{any}**: default value to be used when the package.json property is undefined.
@@ -150,20 +148,16 @@ Add a field to the schema, or overwrite or extend an existing field. The last ar
 **Example**
 
 ```js
-var config = new NormalizePkg();
+const config = new NormalizePkg();
 
 config.field('foo', 'string', {
   default: 'bar'
 });
 
-var pkg = config.normalize({});
+const pkg = config.normalize({});
 console.log(pkg);
 //=> {foo:  'bar'}
 ```
-
-### [.normalize](index.js#L102)
-
-Iterate over `pkg` properties and normalize values that have corresponding [fields](#field) registered on the schema.
 
 **Params**
 
@@ -174,8 +168,8 @@ Iterate over `pkg` properties and normalize values that have corresponding [fiel
 **Example**
 
 ```js
-var config = new NormalizePkg();
-var pkg = config.normalize(require('./package.json'));
+const config = new NormalizePkg();
+const pkg = config.normalize(require('./package.json'));
 ```
 
 ## Options
@@ -259,23 +253,26 @@ console.log(pkg.name);
 
 ## About
 
-### Related projects
-
-[update](https://www.npmjs.com/package/update): Be scalable! Update is a new, open source developer framework and CLI for automating updates… [more](https://github.com/update/update) | [homepage](https://github.com/update/update "Be scalable! Update is a new, open source developer framework and CLI for automating updates of any kind in code projects.")
-
-### Contributing
+<details>
+<summary><strong>Contributing</strong></summary>
 
 Pull requests and stars are always welcome. For bugs and feature requests, [please create an issue](../../issues/new).
 
-### Contributors
+</details>
 
-| **Commits** | **Contributor** | 
-| --- | --- |
-| 150 | [jonschlinkert](https://github.com/jonschlinkert) |
-| 16 | [doowb](https://github.com/doowb) |
-| 2 | [pdehaan](https://github.com/pdehaan) |
+<details>
+<summary><strong>Running Tests</strong></summary>
 
-### Building docs
+Running and reviewing unit tests is a great way to get familiarized with a library and its API. You can install dependencies and run tests with the following command:
+
+```sh
+$ npm install && npm test
+```
+
+</details>
+
+<details>
+<summary><strong>Building docs</strong></summary>
 
 _(This project's readme.md is generated by [verb](https://github.com/verbose/verb-generate-readme), please don't edit the readme directly. Any changes to the readme must be made in the [.verb.md](.verb.md) readme template.)_
 
@@ -285,26 +282,35 @@ To generate the readme, run the following command:
 $ npm install -g verbose/verb#dev verb-generate-readme && verb
 ```
 
-### Running tests
+</details>
 
-Running and reviewing unit tests is a great way to get familiarized with a library and its API. You can install dependencies and run tests with the following command:
+### Related projects
 
-```sh
-$ npm install && npm test
-```
+You might also be interested in these projects:
+
+[update](https://www.npmjs.com/package/update): Be scalable! Update is a new, open source developer framework and CLI for automating updates… [more](https://github.com/update/update) | [homepage](https://github.com/update/update "Be scalable! Update is a new, open source developer framework and CLI for automating updates of any kind in code projects.")
+
+### Contributors
+
+| **Commits** | **Contributor** |  
+| --- | --- |  
+| 154 | [jonschlinkert](https://github.com/jonschlinkert) |  
+| 16  | [doowb](https://github.com/doowb) |  
+| 2   | [pdehaan](https://github.com/pdehaan) |  
 
 ### Author
 
 **Jon Schlinkert**
 
-* [github/jonschlinkert](https://github.com/jonschlinkert)
-* [twitter/jonschlinkert](https://twitter.com/jonschlinkert)
+* [GitHub Profile](https://github.com/jonschlinkert)
+* [Twitter Profile](https://twitter.com/jonschlinkert)
+* [LinkedIn Profile](https://linkedin.com/in/jonschlinkert)
 
 ### License
 
-Copyright © 2017, [Jon Schlinkert](https://github.com/jonschlinkert).
+Copyright © 2020, [Jon Schlinkert](https://github.com/jonschlinkert).
 Released under the [MIT License](LICENSE).
 
 ***
 
-_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.4.3, on March 16, 2017._
+_This file was generated by [verb-generate-readme](https://github.com/verbose/verb-generate-readme), v0.8.0, on March 01, 2020._
