@@ -1,7 +1,7 @@
 {
   "name": "normalize-pkg",
   "description": "Normalize values in package.json using the map-schema library.",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "homepage": "https://github.com/jonschlinkert/normalize-pkg",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "contributors": [
@@ -25,7 +25,7 @@
     "normalize-pkg": "bin/cli.js"
   },
   "engines": {
-    "node": ">= 0.10.0"
+    "node": ">=10"
   },
   "scripts": {
     "test": "mocha"
